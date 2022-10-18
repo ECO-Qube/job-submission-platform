@@ -57,6 +57,7 @@ const MenuItem = ({children, to = "/"}: MenuItemProps) => {
             backgroundColor: "var(--chakra-colors-ecoqube-blue)",
           },
           "&[aria-current=page]": {
+            transition: "all 0.3s ease-in-out 0s",
             color: "var(--chakra-colors-ecoqube-blue)"
           }
         }}
