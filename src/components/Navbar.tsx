@@ -5,7 +5,9 @@ import StageBackground from "assets/stage-background.jpg"
 
 import {chakra} from "@chakra-ui/react"
 import {PropsWithChildren} from "react";
-import {Link} from "react-router-dom";
+import {NavLink} from "react-router-dom";
+
+const ChakraLink = chakra(NavLink)
 
 type MenuItemProps = PropsWithChildren<{ isLast?: boolean, to: string }>;
 const MenuItem = ({children, to = "/"}: MenuItemProps) => {
@@ -13,8 +15,54 @@ const MenuItem = ({children, to = "/"}: MenuItemProps) => {
     <Text
       mb={{base: 8, sm: 0}}
       display="block"
+      overflow="hidden"
+      fontSize="xl"
     >
-      <Link to={to}>{children}</Link>
+      <ChakraLink
+        to={to}
+        end
+        float="left"
+        color="#f2f2f2"
+        textAlign="center"
+        padding="14px 16px"
+        textDecoration="none"
+        position="relative"
+        sx={{
+          "&:before": {
+            position: "absolute",
+            width: "84%",
+            height: "2px",
+            bottom: "3px",
+            left: "8%",
+            backgroundColor: "white",
+            visibility: "hidden",
+            transform: "scaleX(0)",
+            transition: "all 0.3s ease-in-out 0s",
+            content: "''",
+          },
+          "&:hover:before": {
+            visibility: "visible",
+            transform: "scaleX(1)",
+          },
+          "&[aria-current=page]:before": {
+            content: "''",
+            position: "absolute",
+            width: "84%",
+            height: "2px",
+            bottom: "3px",
+            left: "8%",
+            visibility: "visible",
+            transform: "scaleX(1)",
+            transition: "all 0.3s ease-in-out 0s",
+            backgroundColor: "var(--chakra-colors-ecoqube-blue)",
+          },
+          "&[aria-current=page]": {
+            color: "var(--chakra-colors-ecoqube-blue)"
+          }
+        }}
+      >
+        {children}
+      </ChakraLink>
     </Text>
   );
 };
@@ -32,7 +80,6 @@ const Navbar = () =>
     color="white"
     backgroundPosition="0 -150px"
     backgroundSize="cover"
-    fontSize="xl"
   >
     <Flex alignItems="center" columnGap="100px" minHeight="85px">
       <chakra.img display="inline" w="110px" src={EcoQubeLogo} alt="EcoQube logo"/>
