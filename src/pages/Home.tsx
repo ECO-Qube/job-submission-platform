@@ -1,49 +1,54 @@
-import {Box, Grid, VStack, Text, Code, Link, SimpleGrid, Divider, Heading} from "@chakra-ui/react";
-import {Logo} from "Logo";
-import Navbar from "components/Navbar";
+import {
+  Box,
+  SimpleGrid,
+  Divider,
+  Heading,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper, NumberDecrementStepper
+} from "@chakra-ui/react";
 import * as React from "react";
-import {ChakraProvider} from "@chakra-ui/react";
 import {createColumnHelper} from "@tanstack/react-table";
 import {DataTable} from "components/DataTable";
 
-type UnitConversion = {
-  fromUnit: string;
-  toUnit: string;
-  factor: number;
-};
+type TargetSelectorColumn = {
+  nodeName: string;
+  cpuTargetSelector: object;
+  energyConsumption: number;
+}
 
-const data: UnitConversion[] = [
+// TODO: Map this to the actual data using https://tanstack.com/query/v4/?from=reactQueryV3&original=https://react-query-v3.tanstack.com/
+const data: TargetSelectorColumn[] = [
   {
-    fromUnit: "inches",
-    toUnit: "millimetres (mm)",
-    factor: 25.4
-  },
-  {
-    fromUnit: "feet",
-    toUnit: "centimetres (cm)",
-    factor: 30.48
-  },
-  {
-    fromUnit: "yards",
-    toUnit: "metres (m)",
-    factor: 0.91444
-  },
-];
+    nodeName: "host-empa-1",
+    cpuTargetSelector: <NumberInput defaultValue={15} min={10} max={20}/>,
+    energyConsumption: 1000,
+  }];
 
-const columnHelper = createColumnHelper<UnitConversion>();
+const columnHelper = createColumnHelper<TargetSelectorColumn>();
 
 const columns = [
-  columnHelper.accessor("fromUnit", {
+  columnHelper.accessor("nodeName", {
+    id: "nodeName",
+    header: "NODE NAME",
     cell: (info) => info.getValue(),
-    header: "To convert"
   }),
-  columnHelper.accessor("toUnit", {
-    cell: (info) => info.getValue(),
-    header: "Into"
+  columnHelper.display({
+    id: 'actions',
+    header: "CPU USAGE [%]",
+    cell: props =>
+      <NumberInput size='md' maxW={24} defaultValue={15} min={10}>
+        <NumberInputField/>
+        <NumberInputStepper>
+          <NumberIncrementStepper/>
+          <NumberDecrementStepper/>
+        </NumberInputStepper>
+      </NumberInput>
   }),
-  columnHelper.accessor("factor", {
+  columnHelper.accessor("energyConsumption", {
     cell: (info) => info.getValue(),
-    header: "Multiply by",
+    header: "WATTS TARGET [W]",
     meta: {
       isNumeric: true
     }
