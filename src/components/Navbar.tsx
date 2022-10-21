@@ -9,6 +9,7 @@ import {NavLink} from "react-router-dom";
 
 const ChakraLink = chakra(NavLink)
 
+// TODO: Look into Spacer component
 type MenuItemProps = PropsWithChildren<{ isLast?: boolean, to: string }>;
 const MenuItem = ({children, to = "/"}: MenuItemProps) => {
   return (
