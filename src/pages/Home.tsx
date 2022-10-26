@@ -3,18 +3,14 @@ import {
   SimpleGrid,
   Divider,
   Heading,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper, NumberDecrementStepper
 } from "@chakra-ui/react";
 import * as React from "react";
 import {createColumnHelper} from "@tanstack/react-table";
 import {DataTable} from "components/DataTable";
+import TargetSelector from "../components/TargetSelector";
 
 type TargetSelectorColumn = {
   nodeName: string;
-  cpuTargetSelector: object;
   energyConsumption: number;
 }
 
@@ -22,7 +18,6 @@ type TargetSelectorColumn = {
 const data: TargetSelectorColumn[] = [
   {
     nodeName: "host-empa-1",
-    cpuTargetSelector: <NumberInput defaultValue={15} min={10} max={20}/>,
     energyConsumption: 1000,
   }];
 
@@ -37,14 +32,10 @@ const columns = [
   columnHelper.display({
     id: 'actions',
     header: "CPU USAGE [%]",
-    cell: props =>
-      <NumberInput size='md' maxW={24} defaultValue={15} min={10}>
-        <NumberInputField/>
-        <NumberInputStepper>
-          <NumberIncrementStepper/>
-          <NumberDecrementStepper/>
-        </NumberInputStepper>
-      </NumberInput>
+    meta: {
+      isNumeric: true,
+    },
+    cell: props => <TargetSelector row={props.row} />
   }),
   columnHelper.accessor("energyConsumption", {
     cell: (info) => info.getValue(),

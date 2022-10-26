@@ -50,7 +50,7 @@ export function DataTable<Data extends object>({
                     header.getContext()
                   )}
 
-                  <chakra.span pl="4">
+                  <chakra.span pl="0">
                     {header.column.getIsSorted() ? (
                       header.column.getIsSorted() === "desc" ? (
                         <TriangleDownIcon aria-label="sorted descending" />
