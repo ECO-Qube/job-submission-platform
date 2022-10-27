@@ -11,11 +11,6 @@ type TargetSelectorColumn = {
   energyConsumption: number;
 }
 
-type GetTargetResponse = {
-  targets: Map<string, number>;
-}
-
-
 const columnHelper = createColumnHelper<TargetSelectorColumn>();
 
 const columns = [
@@ -52,7 +47,7 @@ const TargetSelection = () => {
   );
 
   if (isLoading) {
-    return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl' /></Box>;
+    return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
   }
 
   if (error) {
@@ -61,12 +56,10 @@ const TargetSelection = () => {
     return <Box>Error: {error.message} 😱</Box>;
   }
 
-  const targetRowData: TargetSelectorColumn[] = Object.keys(data?.targets).map((key) => {
-    return {
-      nodeName: key,
-      energyConsumption: data?.targets[key]
-    }
-  });
+  const targetRowData: TargetSelectorColumn[] = Object.keys(data?.targets).map((key) => ({
+    nodeName: key,
+    energyConsumption: data?.targets[key]
+  }));
 
   return <DataTable data={targetRowData} columns={columns}/>;
 }

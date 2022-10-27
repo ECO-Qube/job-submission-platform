@@ -17,8 +17,8 @@ const TargetSelector = ({row}: TargetSelectorProps) => {
 
   return (
     <chakra.span display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
-      <NumberInput size='md' maxW={100} defaultValue={50} min={0} isDisabled={!editEnabled}>
-        <NumberInputField/>
+      <NumberInput size='md' maxW={90} defaultValue={50} min={0} max={100} step={5} isDisabled={!editEnabled}>
+        <NumberInputField />
         <NumberInputStepper>
           <NumberIncrementStepper/>
           <NumberDecrementStepper/>
