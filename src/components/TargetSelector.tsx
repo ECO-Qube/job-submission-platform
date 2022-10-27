@@ -7,7 +7,7 @@ import {
   NumberInputStepper
 } from "@chakra-ui/react";
 import * as React from "react";
-import {CheckIcon, CloseIcon, EditIcon, SmallCloseIcon} from "@chakra-ui/icons";
+import {CheckIcon, EditIcon} from "@chakra-ui/icons";
 import {PropsWithChildren, useState} from "react";
 
 // TODO: Change any

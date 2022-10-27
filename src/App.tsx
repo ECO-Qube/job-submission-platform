@@ -1,4 +1,5 @@
 import * as React from "react"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   ChakraProvider, extendTheme,
 } from "@chakra-ui/react"
@@ -25,15 +26,19 @@ const theme = extendTheme({
   ...brandingColors,
 })
 
+const queryClient = new QueryClient()
+
 export const App = () => (
-  <BrowserRouter>
-    <ChakraProvider theme={theme}>
-      <Navbar/>
-      <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/reports" element={<Reports/>}/>
-        <Route path="/admin" element={<Admin/>}/>
-      </Routes>
-    </ChakraProvider>
-  </BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <ChakraProvider theme={theme}>
+        <Navbar/>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/reports" element={<Reports/>}/>
+          <Route path="/admin" element={<Admin/>}/>
+        </Routes>
+      </ChakraProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 )
