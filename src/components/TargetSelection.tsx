@@ -4,18 +4,17 @@ import {createColumnHelper} from "@tanstack/react-table";
 import TargetSelector from "./TargetSelector";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
+import {Box, Spinner} from "@chakra-ui/react";
 
 type TargetSelectorColumn = {
   nodeName: string;
   energyConsumption: number;
 }
 
-// TODO: Map this to the actual data using https://tanstack.com/query/v4/?from=reactQueryV3&original=https://react-query-v3.tanstack.com/
-const targetRowData: TargetSelectorColumn[] = [
-  {
-    nodeName: "host-empa-1",
-    energyConsumption: 1000,
-  }];
+type GetTargetResponse = {
+  targets: Map<string, number>;
+}
+
 
 const columnHelper = createColumnHelper<TargetSelectorColumn>();
 
@@ -31,7 +30,7 @@ const columns = [
     meta: {
       isNumeric: true,
     },
-    cell: props => <TargetSelector row={props.row} />
+    cell: props => <TargetSelector row={props.row}/>
   }),
   columnHelper.accessor("energyConsumption", {
     cell: (info) => info.getValue(),
@@ -43,12 +42,33 @@ const columns = [
 ];
 
 const TargetSelection = () => {
-  const { data, error, isLoading } = useQuery(["targets"], () =>
+  // TODO: Wrap in useEffect (trigger on componentDidMount)
+  const {data, error, isLoading} = useQuery(["targets"], () =>
     axios
       .get("http://localhost:8080/api/v1/targets")
-      .then((res) => res.data));
+      .then((res) =>
+        res.data
+      )
+  );
 
-  return <DataTable data={targetRowData} columns={columns} />;
+  if (isLoading) {
+    return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl' /></Box>;
+  }
+
+  if (error) {
+    console.log(error);
+    // @ts-ignore
+    return <Box>Error: {error.message} 😱</Box>;
+  }
+
+  const targetRowData: TargetSelectorColumn[] = Object.keys(data?.targets).map((key) => {
+    return {
+      nodeName: key,
+      energyConsumption: data?.targets[key]
+    }
+  });
+
+  return <DataTable data={targetRowData} columns={columns}/>;
 }
 
 export default TargetSelection;
