@@ -25,10 +25,10 @@ const columns = [
     meta: {
       isNumeric: true,
     },
-    cell: props => <TargetSelector row={props.row}/>
+    cell: (props) => <TargetSelector currentValue={props.row.original.energyConsumption} />
   }),
   columnHelper.accessor("energyConsumption", {
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() * 25 + 1000,
     header: "WATTS TARGET [W]",
     meta: {
       isNumeric: true
@@ -37,7 +37,7 @@ const columns = [
 ];
 
 const TargetSelection = () => {
-  // TODO: Wrap in useEffect (trigger on componentDidMount)
+  // TODO: Wrap in useEffect
   const {data, error, isLoading} = useQuery(["targets"], () =>
     axios
       .get("http://localhost:8080/api/v1/targets")
@@ -52,6 +52,7 @@ const TargetSelection = () => {
 
   if (error) {
     console.log(error);
+    // TODO: Maybe investigate why error is of type unknown
     // @ts-ignore
     return <Box>Error: {error.message} 😱</Box>;
   }
