@@ -52,12 +52,13 @@ const WorkloadsList = () => {
     submissionDate: "02/10/2022 15:00"
   }];
 
-  console.log(workloadList)
-
   const columns = [
     columnHelper.accessor("nodeName",{
       id: "nodeName",
       header: "NODE NAME",
+      meta: {
+        width: "20vw"
+      },
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("currentState", {

@@ -40,7 +40,6 @@ const TargetSelection = () => {
   }
 
   if (error) {
-    console.log(error);
     // TODO: Maybe investigate why error is of type unknown
     // @ts-ignore
     return <Box>Error: {error.message} 😱</Box>;
@@ -61,19 +60,20 @@ const TargetSelection = () => {
     });
   }
 
-  console.log(rowData)
-
   const columns = [
     columnHelper.accessor("nodeName", {
       id: "nodeName",
       header: "NODE NAME",
+      meta: {
+        width: "20vw"
+      },
       cell: (info) => info.getValue(),
     }),
     columnHelper.display({
       id: 'actions',
       header: "CPU USAGE [%]",
       meta: {
-        isNumeric: true,
+        isNumeric: true
       },
       cell: (props) => <TargetSelector nodeName={props.row.original.nodeName}
                                        initialValue={props.row.original.cpuUsage}
