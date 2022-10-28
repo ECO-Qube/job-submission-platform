@@ -4,33 +4,51 @@ import {
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper
+  NumberInputStepper,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {CheckIcon, EditIcon} from "@chakra-ui/icons";
 import {PropsWithChildren, useState} from "react";
+import axios from "axios";
+import {useMutation} from "@tanstack/react-query";
 
-// TODO: Change any
+// TODO: Lift up for line chart
 // type TargetSelectorProps = PropsWithChildren<{ currentValue: number, onTrigger: CallableFunction }>;
-type TargetSelectorProps = PropsWithChildren<{ currentValue: number }>;
+type TargetSelectorProps = PropsWithChildren<{ nodeName: string, initialValue: number }>;
 // const TargetSelector = ({onTrigger}: TargetSelectorProps) => {
-const TargetSelector = ({currentValue}: TargetSelectorProps) => {
+const TargetSelector = ({nodeName, initialValue}: TargetSelectorProps) => {
   const [editEnabled, enableEdit] = useState(false);
+  const [currentValue, setCurrentValue] = useState(initialValue);
+  // Just to avoid sending a request if the value hasn't actually changed
+  const [previousValue, setPreviousValue] = useState(initialValue);
+
+  const mutateTarget = useMutation((newTarget: object) =>
+    axios.post('http://localhost:8080/api/v1/targets', {
+      targets: newTarget
+    }), {
+    onSuccess: () => {
+      console.log('success')
+    },
+  });
 
   const onClick = () => {
     enableEdit(!editEnabled);
-    console.log(currentValue);
-    if (!editEnabled) {
-      // TODO: update value in backend if value has changed
-      // if value was changed, dispatch a POST request to update the value
-      // will be lifted up to the parent component in order to update the line chart
+    console.log("currentValue: " + currentValue);
+    console.log("previousValue: " + previousValue);
+
+    if (editEnabled && previousValue !== currentValue) {
+      setPreviousValue(currentValue);
+      console.log(nodeName);
+      mutateTarget.mutate({[nodeName]: currentValue});
+      // TODO: Toast for confirmation or error
     }
   }
 
   return (
     <chakra.span display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
-      <NumberInput size='md' maxW={90} defaultValue={currentValue} min={0} max={100} step={5} isDisabled={!editEnabled}>
-        <NumberInputField />
+      <NumberInput size='md' maxW={90} defaultValue={initialValue} min={0} max={100} step={5} isDisabled={!editEnabled}
+                   onChange={(value) => setCurrentValue(Number(value))}>
+        <NumberInputField/>
         <NumberInputStepper>
           <NumberIncrementStepper/>
           <NumberDecrementStepper/>

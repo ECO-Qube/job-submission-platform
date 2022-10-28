@@ -25,7 +25,8 @@ const columns = [
     meta: {
       isNumeric: true,
     },
-    cell: (props) => <TargetSelector currentValue={props.row.original.energyConsumption} />
+    cell: (props) => <TargetSelector nodeName={props.row.original.nodeName}
+                                     initialValue={props.row.original.energyConsumption}/>
   }),
   columnHelper.accessor("energyConsumption", {
     cell: (info) => info.getValue() * 25 + 1000,
