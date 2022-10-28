@@ -14,9 +14,9 @@ import {useMutation} from "@tanstack/react-query";
 
 // TODO: Lift up for line chart
 // type TargetSelectorProps = PropsWithChildren<{ currentValue: number, onTrigger: CallableFunction }>;
-type TargetSelectorProps = PropsWithChildren<{ nodeName: string, initialValue: number }>;
+type TargetSelectorProps = PropsWithChildren<{ nodeName: string, initialValue: number, onChange: CallableFunction }>;
 // const TargetSelector = ({onTrigger}: TargetSelectorProps) => {
-const TargetSelector = ({nodeName, initialValue}: TargetSelectorProps) => {
+const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps) => {
   const [editEnabled, enableEdit] = useState(false);
   const [currentValue, setCurrentValue] = useState(initialValue);
   // Just to avoid sending a request if the value hasn't actually changed
@@ -27,27 +27,33 @@ const TargetSelector = ({nodeName, initialValue}: TargetSelectorProps) => {
       targets: newTarget
     }), {
     onSuccess: () => {
-      console.log('success')
+      // console.log('success')
     },
   });
 
-  const onClick = () => {
+  const onClick = (wattRef: any) => {
     enableEdit(!editEnabled);
-    console.log("currentValue: " + currentValue);
-    console.log("previousValue: " + previousValue);
+    // console.log("currentValue: " + currentValue);
+    // console.log("previousValue: " + previousValue);
 
     if (editEnabled && previousValue !== currentValue) {
+      onChange(currentValue);
       setPreviousValue(currentValue);
-      console.log(nodeName);
+      // console.log(nodeName);
       mutateTarget.mutate({[nodeName]: currentValue});
       // TODO: Toast for confirmation or error
     }
   }
 
+  function onNumberInputChange(value: string) {
+    setCurrentValue(Number(value));
+    // notify parent of change and pass the new value to the parent
+  }
+
   return (
     <chakra.span display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
       <NumberInput size='md' maxW={90} defaultValue={initialValue} min={0} max={100} step={5} isDisabled={!editEnabled}
-                   onChange={(value) => setCurrentValue(Number(value))}>
+                   onChange={(value) => onNumberInputChange(value)}>
         <NumberInputField/>
         <NumberInputStepper>
           <NumberIncrementStepper/>
