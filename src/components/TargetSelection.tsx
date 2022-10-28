@@ -5,7 +5,7 @@ import TargetSelector from "./TargetSelector";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {Box, Spinner} from "@chakra-ui/react";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 type TargetSelectorColumn = {
   nodeName: string;
@@ -16,7 +16,6 @@ type TargetSelectorColumn = {
 const columnHelper = createColumnHelper<TargetSelectorColumn>();
 
 const TargetSelection = () => {
-  // TODO: Wrap in useEffect
   const {data, error, isLoading} = useQuery(["targets"], () =>
     axios
       .get("http://localhost:8080/api/v1/targets")
@@ -31,7 +30,7 @@ const TargetSelection = () => {
     const targetRowData: TargetSelectorColumn[] = Object.keys(data?.targets).map((key) => ({
       nodeName: key,
       cpuUsage: data?.targets[key],
-      energyConsumption: data?.targets[key] * 1000,
+      energyConsumption: data?.targets[key] + 1000,
     }));
     setRowData(targetRowData);
   }, [data]);
@@ -48,19 +47,21 @@ const TargetSelection = () => {
   }
 
   function changeRow(newTarget: number, targetIndex: number) {
-    console.log("changerow triggered");
     setRowData((prevRowData) => {
-      return prevRowData.map((data, index) =>{
+      return prevRowData.map((data, index) => {
         if (index === targetIndex) {
-          return {...data,
+          return {
+            ...data,
             cpuUsage: newTarget,
-            energyConsumption: newTarget * 1000,
+            energyConsumption: newTarget + 1000,
           }
         }
         return data;
       });
     });
   }
+
+  console.log(rowData)
 
   const columns = [
     columnHelper.accessor("nodeName", {

@@ -27,27 +27,22 @@ const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps)
       targets: newTarget
     }), {
     onSuccess: () => {
-      // console.log('success')
+      // TODO: Toast for confirmation or error
     },
   });
 
-  const onClick = (wattRef: any) => {
+  const onClick = () => {
     enableEdit(!editEnabled);
-    // console.log("currentValue: " + currentValue);
-    // console.log("previousValue: " + previousValue);
 
     if (editEnabled && previousValue !== currentValue) {
-      onChange(currentValue);
       setPreviousValue(currentValue);
-      // console.log(nodeName);
       mutateTarget.mutate({[nodeName]: currentValue});
-      // TODO: Toast for confirmation or error
+      onChange(currentValue);
     }
   }
 
   function onNumberInputChange(value: string) {
     setCurrentValue(Number(value));
-    // notify parent of change and pass the new value to the parent
   }
 
   return (
