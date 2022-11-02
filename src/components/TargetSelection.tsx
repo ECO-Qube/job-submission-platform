@@ -36,20 +36,18 @@ const TargetSelection = () => {
     setRowData(targetRowData);
   }, [payload]);
 
-  // if (isLoading) {
-  //   return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
-  // }
-  //
-  // if (error) {
-  //   // TODO: Maybe investigate why error is of type unknown
-  //   // @ts-ignore
-  //   return <Box>Error: {error.message} 😱</Box>;
-  // }
+  if (isLoading) {
+    return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
+  }
+
+  if (error) {
+    // TODO: Maybe investigate why error is of type unknown
+    // @ts-ignore
+    return <Box>Error: {error.message} 😱</Box>;
+  }
 
   function updateTarget(newTarget: number, targetIndex: number) {
-    console.log("this has run")
     setRowData((prevRowData) => {
-      console.log(prevRowData.length)
       return prevRowData.map((data, index) => {
         if (index === targetIndex) {
           return {
