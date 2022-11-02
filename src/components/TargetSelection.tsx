@@ -16,7 +16,7 @@ type TargetSelectorColumn = {
 const columnHelper = createColumnHelper<TargetSelectorColumn>();
 
 const TargetSelection = () => {
-  const {data, error, isLoading} = useQuery(["targets"], () =>
+  const {data: payload, error, isLoading} = useQuery(["targets"], () =>
     axios
       .get("http://localhost:8080/api/v1/targets")
       .then((res) =>
@@ -25,28 +25,31 @@ const TargetSelection = () => {
   );
 
   const [rowData, setRowData] = useState<TargetSelectorColumn[]>([]);
+  // TODO: Extract away
   useEffect(() => {
-    if (!data) return;
-    const targetRowData: TargetSelectorColumn[] = Object.keys(data?.targets).map((key) => ({
+    if (!payload) return;
+    const targetRowData: TargetSelectorColumn[] = Object.keys(payload?.targets).map((key) => ({
       nodeName: key,
-      cpuUsage: data?.targets[key],
-      energyConsumption: data?.targets[key] + 1000,
+      cpuUsage: payload?.targets[key],
+      energyConsumption: payload?.targets[key] + 1000,
     }));
     setRowData(targetRowData);
-  }, [data]);
+  }, [payload]);
 
-  if (isLoading) {
-    return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
-  }
+  // if (isLoading) {
+  //   return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
+  // }
+  //
+  // if (error) {
+  //   // TODO: Maybe investigate why error is of type unknown
+  //   // @ts-ignore
+  //   return <Box>Error: {error.message} 😱</Box>;
+  // }
 
-  if (error) {
-    // TODO: Maybe investigate why error is of type unknown
-    // @ts-ignore
-    return <Box>Error: {error.message} 😱</Box>;
-  }
-
-  function changeRow(newTarget: number, targetIndex: number) {
+  function updateTarget(newTarget: number, targetIndex: number) {
+    console.log("this has run")
     setRowData((prevRowData) => {
+      console.log(prevRowData.length)
       return prevRowData.map((data, index) => {
         if (index === targetIndex) {
           return {
@@ -69,15 +72,17 @@ const TargetSelection = () => {
       },
       cell: (info) => info.getValue(),
     }),
-    columnHelper.display({
-      id: 'actions',
+    columnHelper.display( {
+      id: 'cpuUsage',
       header: "CPU USAGE [%]",
       meta: {
         isNumeric: true
       },
       cell: (props) => <TargetSelector nodeName={props.row.original.nodeName}
                                        initialValue={props.row.original.cpuUsage}
-                                       onChange={(value: number) => changeRow(value, props.row.index)}/>
+                                       onChange={(value: number) => updateTarget(value, props.row.index)}/>
+
+      // React.useCallback((value: number) => updateTarget(value, props.row.index), [false])
       // input will rerender due to changeRow passed as a property, useCallback avoids this. Wrap function in useCallback
       // and say it depends on this property, only trigger if prop changed
     }),
@@ -88,6 +93,7 @@ const TargetSelection = () => {
       meta: {
         isNumeric: true
       },
+      id: "energyConsumption"
     })
   ];
 

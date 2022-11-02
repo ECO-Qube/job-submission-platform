@@ -4,11 +4,11 @@ import {
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
+  NumberInputStepper, useCallbackRef,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {CheckIcon, EditIcon} from "@chakra-ui/icons";
-import {PropsWithChildren, useState} from "react";
+import {PropsWithChildren, useCallback, useState} from "react";
 import axios from "axios";
 import {useMutation} from "@tanstack/react-query";
 
@@ -31,7 +31,7 @@ const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps)
     },
   });
 
-  const onClick = () => {
+  const onSave = () => {
     enableEdit(!editEnabled);
 
     if (editEnabled && previousValue !== currentValue) {
@@ -48,14 +48,14 @@ const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps)
   return (
     <chakra.span display="flex" flexDirection="row" alignItems="center" justifyContent="flex-end">
       <NumberInput size='md' maxW={90} defaultValue={initialValue} min={0} max={100} step={5} isDisabled={!editEnabled}
-                   onChange={(value) => onNumberInputChange(value)}>
+                   onChange={(value: string) => onNumberInputChange(value)}>
         <NumberInputField/>
         <NumberInputStepper>
           <NumberIncrementStepper/>
           <NumberDecrementStepper/>
         </NumberInputStepper>
       </NumberInput>
-      <EditButton onClick={onClick} enabled={editEnabled}/>
+      <EditButton onClick={onSave} enabled={editEnabled}/>
     </chakra.span>
   )
 }

@@ -1,10 +1,6 @@
 import {DataTable, DataTableProps} from "./DataTable";
 import * as React from "react";
 import {createColumnHelper, RowData} from "@tanstack/react-table";
-import TargetSelector from "./TargetSelector";
-import {useQuery} from "@tanstack/react-query";
-import axios from "axios";
-import {Box, Spinner} from "@chakra-ui/react";
 import {useCallback, useEffect, useState} from "react";
 
 type WorkloadsListColumn = {
@@ -16,6 +12,9 @@ type WorkloadsListColumn = {
 const columnHelper = createColumnHelper<WorkloadsListColumn>();
 
 const WorkloadsList = () => {
+  useEffect(() => {
+
+    });
   // const {data, error, isLoading} = useQuery(["targets"], () =>
   //   axios
   //     .get("http://localhost:8080/api/v1/targets")

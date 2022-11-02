@@ -43,7 +43,7 @@ export function DataTable<Data extends object>({
                 <Th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  isNumeric={meta?.isNumeric || meta?.alignContent === "end" }
+                  isNumeric={meta?.isNumeric || meta?.alignContent === "end"}
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -53,7 +53,7 @@ export function DataTable<Data extends object>({
                   <chakra.span pl="0">
                     {header.column.getIsSorted() ? (
                       header.column.getIsSorted() === "desc" ? (
-                        <TriangleDownIcon marginLeft="5px" aria-label="sorted descending" />
+                        <TriangleDownIcon marginLeft="5px" aria-label="sorted descending"/>
                       ) : (
                         <TriangleUpIcon marginLeft="5px" aria-label="sorted ascending"/>
                       )
