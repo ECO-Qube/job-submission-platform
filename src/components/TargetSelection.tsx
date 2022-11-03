@@ -1,11 +1,9 @@
-import {DataTable} from "./DataTable";
 import * as React from "react";
-import {createColumnHelper, RowData} from "@tanstack/react-table";
 import TargetSelector from "./TargetSelector";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {Box, Spinner} from "@chakra-ui/react";
-import {FC, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {ColDef} from "ag-grid-community";
 
@@ -16,7 +14,7 @@ type TargetSelectorColumn = {
 }
 
 const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
-  return cpuUsage * 2.5 + 1000;
+  return (cpuUsage + 1000) * 1.5;
 }
 
 const TargetSelection = () => {
