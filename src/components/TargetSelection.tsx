@@ -1,19 +1,23 @@
-import {DataTable, DataTableProps} from "./DataTable";
+import {DataTable} from "./DataTable";
 import * as React from "react";
 import {createColumnHelper, RowData} from "@tanstack/react-table";
 import TargetSelector from "./TargetSelector";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {Box, Spinner} from "@chakra-ui/react";
-import {useCallback, useEffect, useState} from "react";
+import {FC, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {AgGridReact} from "ag-grid-react";
+import {ColDef} from "ag-grid-community";
 
 type TargetSelectorColumn = {
   nodeName: string;
-  cpuUsage: number;
+  cpuUsage: object;
   energyConsumption: number;
 }
 
-const columnHelper = createColumnHelper<TargetSelectorColumn>();
+const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
+  return cpuUsage * 2.5 + 1000;
+}
 
 const TargetSelection = () => {
   const {data: payload, error, isLoading} = useQuery(["targets"], () =>
@@ -24,8 +28,16 @@ const TargetSelection = () => {
       )
   );
 
+  const gridRef = useRef<AgGridReact>(null);
+
+  const setNewEnergyConsumption = useCallback((value: string, rowId: string) => {
+    let rowNode = gridRef.current!.api.getRowNode(rowId)!;
+    let newEnergyConsumption = fromCpuUsageToEnergyConsumption(Number(value));
+    rowNode.setDataValue('energyConsumption', newEnergyConsumption);
+  }, []);
+
   const [rowData, setRowData] = useState<TargetSelectorColumn[]>([]);
-  // TODO: Extract away
+  // // TODO: Extract away
   useEffect(() => {
     if (!payload) return;
     const targetRowData: TargetSelectorColumn[] = Object.keys(payload?.targets).map((key) => ({
@@ -35,6 +47,36 @@ const TargetSelection = () => {
     }));
     setRowData(targetRowData);
   }, [payload]);
+
+  const columnDefs: ColDef<TargetSelectorColumn>[] = [
+    {
+      headerName: 'NODE NAME',
+      field: 'nodeName',
+      flex: 2,
+    },
+    {
+      headerName: 'CPU TARGET [%]',
+      field: 'cpuUsage',
+      flex: 1,
+      cellRenderer: (params: any) => {
+        // put the value in bold
+        return <TargetSelector nodeName={params.data.nodeName}
+                               initialValue={params.data.cpuUsage}
+                               onChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}/>;
+      }
+    },
+    {
+      headerName: 'ENERGY TARGET [W]',
+      field: 'energyConsumption',
+      flex: 1,
+    },
+  ];
+
+  const defaultColDef = useMemo<ColDef>(() => {
+    return {
+      resizable: true,
+    };
+  }, []);
 
   if (isLoading) {
     return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
@@ -46,56 +88,13 @@ const TargetSelection = () => {
     return <Box>Error: {error.message} 😱</Box>;
   }
 
-  function updateTarget(newTarget: number, targetIndex: number) {
-    setRowData((prevRowData) => {
-      return prevRowData.map((data, index) => {
-        if (index === targetIndex) {
-          return {
-            ...data,
-            cpuUsage: newTarget,
-            energyConsumption: newTarget + 1000,
-          }
-        }
-        return data;
-      });
-    });
-  }
-
-  const columns = [
-    columnHelper.accessor("nodeName", {
-      id: "nodeName",
-      header: "NODE NAME",
-      meta: {
-        width: "20vw"
-      },
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.display( {
-      id: 'cpuUsage',
-      header: "CPU USAGE [%]",
-      meta: {
-        isNumeric: true
-      },
-      cell: (props) => <TargetSelector nodeName={props.row.original.nodeName}
-                                       initialValue={props.row.original.cpuUsage}
-                                       onChange={(value: number) => updateTarget(value, props.row.index)}/>
-
-      // React.useCallback((value: number) => updateTarget(value, props.row.index), [false])
-      // input will rerender due to changeRow passed as a property, useCallback avoids this. Wrap function in useCallback
-      // and say it depends on this property, only trigger if prop changed
-    }),
-    columnHelper.accessor("energyConsumption", {
-      // https://github.com/TanStack/table/discussions/4205#discussioncomment-3206311
-      cell: (info) => info.getValue(),
-      header: "WATTS TARGET [W]",
-      meta: {
-        isNumeric: true
-      },
-      id: "energyConsumption"
-    })
-  ];
-
-  return <DataTable data={rowData} columns={columns}/>;
+  return (
+    <div className="ag-theme-alpine" style={{ height: 400, width: "100%" }}>
+      <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
+                   defaultColDef={defaultColDef}
+      ></AgGridReact>
+    </div>
+  );
 }
 
 export default TargetSelection;
