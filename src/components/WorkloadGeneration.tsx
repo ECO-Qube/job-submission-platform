@@ -1,21 +1,27 @@
 import {Button, Flex} from "@chakra-ui/react";
+import {useMutation} from "@tanstack/react-query";
+import axios from "axios";
 
 const WorkloadsGeneration = () => {
+   const spawnWorkload = useMutation(() => {
+      return axios.post('http://localhost:8080/api/v1/workloads')
+    });
+
   return <Flex
     direction="column"
     justifyContent="center"
     rowGap={4}
   >
-    <Button colorScheme='teal' variant='solid'>
+    <Button colorScheme='teal' variant='solid' onClick={() => spawnWorkload.mutate()}>
       Spawn workload
     </Button>
     <Button colorScheme='teal' variant='solid'>
       Delete pending workload
     </Button>
     <Button colorScheme='teal' variant='solid'>
-      Spawn workload
+      Clear all completed workloads
     </Button>
-  </Flex>
+  </Flex>;
 }
 
 export default WorkloadsGeneration;

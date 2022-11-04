@@ -23,7 +23,10 @@ const WorkloadsList = () => {
       .get("http://localhost:8080/api/v1/workloads")
       .then((res) =>
         res.data
-      )
+      ),
+    {
+      refetchInterval: 1000,
+    }
   );
 
   const [rowData, setRowData] = useState<WorkloadsListColumn[]>([]);

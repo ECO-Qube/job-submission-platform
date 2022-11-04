@@ -15,7 +15,7 @@ const Home = () =>
       <Heading paddingBottom="20px" fontSize="x-large">TARGET SELECTION</Heading>
       <TargetSelection/>
     </Box>
-    <Box padding="10px" bg='tomato' height='80px'>Line chart</Box>
+    <Box padding="10px" height='80px'>Line chart (WIP)</Box>
     <Divider gridColumn="span 2"/>
     <Box padding="10px">
       <Heading paddingBottom="20px" fontSize="x-large">WORKLOADS LIST</Heading>
