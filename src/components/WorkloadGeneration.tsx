@@ -12,13 +12,13 @@ const WorkloadsGeneration = () => {
     justifyContent="center"
     rowGap={4}
   >
-    <Button colorScheme='teal' variant='solid' onClick={() => spawnWorkload.mutate()}>
+    <Button size="sm" colorScheme='teal' variant='solid' onClick={() => spawnWorkload.mutate()}>
       Spawn workload
     </Button>
-    <Button colorScheme='teal' variant='solid'>
+    <Button size="sm" colorScheme='teal' variant='solid'>
       Delete pending workload
     </Button>
-    <Button colorScheme='teal' variant='solid'>
+    <Button size="sm" colorScheme='teal' variant='solid'>
       Clear all completed workloads
     </Button>
   </Flex>;
