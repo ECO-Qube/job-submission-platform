@@ -1,54 +1,75 @@
 import React, {SetStateAction, useEffect, useState} from "react";
-import {AxisOptions, Chart} from "react-charts";
+import {AxisOptions, AxisTimeOptions, Chart} from "react-charts";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
-import {useInterval} from "@chakra-ui/react";
 import {UserSerie} from "react-charts/types/types";
 
-type NodeCpuUsage = { timestamp: Date, value: number };
-type NodeCpuUsageApiPayload = {nodeName: string, timestamp: string, usage: number};
+type InstantCpuUsage = { timestamp: Date, data: number };
+
+type NodeCpuUsageApiPayload = {
+  nodeName: string,
+  usage: Array<InstantCpuUsage>,
+};
 
 function subtractSeconds(date: Date, seconds: number): Date {
   // TODO: Change to setSeconds
   date.setSeconds(date.getSeconds() - seconds);
-
   return date;
 }
 
-const TargetChart = () => {
-  const [isGraphDefined, setGraphDefined] = useState(false);
+function formatXaxisLabels(value: Date): string {
+  let seconds = value?.getSeconds().toString();
+  let minutes = value?.getMinutes().toString();
+  let hours = value?.getHours().toString();
 
-  const [graphData, setGraphData] = useState<UserSerie<NodeCpuUsage>[]>(
-    [
-      {
-        label: 'node1',
-        // TODO: Why do I get a type error if the initial array is empty?
-        // data: Array<NodeCpuUsage>(),
-        data: [...Array(10).keys()].map(i => ({timestamp: subtractSeconds(new Date(), i), value: 0})),
-      }
-    ]
+  if (value?.getSeconds() < 10) {
+    seconds = "0" + seconds;
+  }
+  if (value?.getMinutes() < 10) {
+    minutes = "0" + minutes;
+  }
+  if (value?.getSeconds() < 10) {
+    seconds = "0" + hours;
+  }
+  return hours + ":" + minutes + ":" + seconds;
+}
+
+const TargetChart = () => {
+  const [graphData, setGraphData] = useState<UserSerie<InstantCpuUsage>[]>(
+    []
   );
 
   const {data: payload, error, isLoading} = useQuery(["cpuUsage"], () =>
     axios
-      .get("http://localhost:8080/api/v1/actualNodeCpuUsage")
+      .get("http://localhost:8080/api/v1/actualCpuUsageByRangeSeconds", { params:
+          {start: subtractSeconds(new Date(), 10).toISOString(), end: new Date().toISOString()}
+      })
       .then((res) => res.data)
   , {refetchInterval: 1000});
 
+  console.log(payload);
   const primaryAxis = React.useMemo(
-    (): AxisOptions<NodeCpuUsage> => ({
+    (): AxisOptions<InstantCpuUsage> => ({
       getValue: cpuUsage => cpuUsage.timestamp,
       tickCount: 10,
+      formatters: {
+        scale: (value: Date, formatters: AxisTimeOptions<NodeCpuUsageApiPayload>['formatters']) => {
+          // keep value? or "cannot infer type" will be thrown by the chart lib
+          return formatXaxisLabels(value);
+        }
+      },
+      scaleType: "time"
     }),
     []
   )
 
   const secondaryAxes = React.useMemo(
-    (): AxisOptions<NodeCpuUsage>[] => [
+    (): AxisOptions<InstantCpuUsage>[] => [
       {
-        getValue: cpuUsage => cpuUsage.value,
+        getValue: cpuUsage => cpuUsage.data,
         hardMin: 0,
-        hardMax: 10
+        hardMax: 100,
+        scaleType: "linear"
       },
     ],
     []
@@ -57,24 +78,34 @@ const TargetChart = () => {
   useEffect(() => {
     if (!payload) return;
 
-    let newData: UserSerie<NodeCpuUsage> | null = null;
-    if (!isGraphDefined) {
-      // If graph was never defined before, create 10 datapoints set to 0
-      newData = payload.map((nodeCpuUsage: NodeCpuUsageApiPayload) => ({
-        label: nodeCpuUsage.nodeName,
-        data: [...Array(10).keys()].map(i => ({timestamp: subtractSeconds(new Date(nodeCpuUsage.timestamp), i), value: 0}))
-      }))
+    // let newData: UserSerie<NodeCpuUsage>;
+    // if (!isGraphInitialized) {
+    //   // If graph was never defined before, create 10 datapoints set to 0
+    //   newData = payload.map((nodeCpuUsage: NodeCpuUsageApiPayload) => ({
+    //     label: nodeCpuUsage.nodeName,
+    //     data: [...Array(10).keys()].map(i => ({timestamp: new Date(), value: 0}))
+    //   }));
+    //
+    //   setGraphInitialized(true);
+    // } else {
+    //   // TODO: Fix this
+    //   newData = payload.map((nodeCpuUsage: NodeCpuUsageApiPayload) => ({
+    //     label: nodeCpuUsage.nodeName,
+    //     data:  graphData.find(u => u.label == nodeCpuUsage.nodeName)?.data.slice(-9).concat({
+    //       timestamp: new Date(nodeCpuUsage.timestamp),
+    //       value: nodeCpuUsage.usage
+    //     })}));
+    // }
 
-      setGraphDefined(true);
-    } else {
-      // TODO: Fix this
-      newData = payload.map((nodeCpuUsage: NodeCpuUsageApiPayload) => ({
-        label: nodeCpuUsage.nodeName,
-        data:  graphData.find(u => u.label == nodeCpuUsage.nodeName)?.data.slice(1).concat({
-          timestamp: new Date(nodeCpuUsage.timestamp),
-          value: nodeCpuUsage.usage
-        })}));
-    }
+    const newData = payload.map((currentNodeData: NodeCpuUsageApiPayload) => ({
+      label: currentNodeData.nodeName,
+      data: payload.find((u: NodeCpuUsageApiPayload) => u.nodeName == currentNodeData.nodeName)?.usage.map((elem: InstantCpuUsage) => ({
+        timestamp: new Date(elem.timestamp),
+        data: elem.data
+      }))
+    }));
+
+    console.log(newData);
 
     // TODO: WHY!
     // @ts-ignore
