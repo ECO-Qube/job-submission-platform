@@ -28,7 +28,7 @@ function formatXaxisLabels(value: Date): string {
   if (value?.getMinutes() < 10) {
     minutes = "0" + minutes;
   }
-  if (value?.getSeconds() < 10) {
+  if (value?.getHours() < 10) {
     seconds = "0" + hours;
   }
   return hours + ":" + minutes + ":" + seconds;
