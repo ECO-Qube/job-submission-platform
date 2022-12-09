@@ -12,7 +12,6 @@ type NodeCpuUsageApiPayload = {
 };
 
 function subtractSeconds(date: Date, seconds: number): Date {
-  // TODO: Change to setSeconds
   date.setSeconds(date.getSeconds() - seconds);
   return date;
 }
@@ -77,25 +76,6 @@ const TargetChart = () => {
 
   useEffect(() => {
     if (!payload) return;
-
-    // let newData: UserSerie<NodeCpuUsage>;
-    // if (!isGraphInitialized) {
-    //   // If graph was never defined before, create 10 datapoints set to 0
-    //   newData = payload.map((nodeCpuUsage: NodeCpuUsageApiPayload) => ({
-    //     label: nodeCpuUsage.nodeName,
-    //     data: [...Array(10).keys()].map(i => ({timestamp: new Date(), value: 0}))
-    //   }));
-    //
-    //   setGraphInitialized(true);
-    // } else {
-    //   // TODO: Fix this
-    //   newData = payload.map((nodeCpuUsage: NodeCpuUsageApiPayload) => ({
-    //     label: nodeCpuUsage.nodeName,
-    //     data:  graphData.find(u => u.label == nodeCpuUsage.nodeName)?.data.slice(-9).concat({
-    //       timestamp: new Date(nodeCpuUsage.timestamp),
-    //       value: nodeCpuUsage.usage
-    //     })}));
-    // }
 
     const newData = payload.map((currentNodeData: NodeCpuUsageApiPayload) => ({
       label: currentNodeData.nodeName,
