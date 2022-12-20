@@ -9,12 +9,26 @@ import TargetSelection from "../components/TargetSelection";
 import WorkloadsList from "../components/WorkloadsList";
 import WorkloadsGeneration from "../components/WorkloadGeneration";
 import TargetChart from "../components/TargetChart";
+import {useQuery} from "@tanstack/react-query";
+import axios from "axios";
 
-const Home = () =>
-  <SimpleGrid columns={2} spacing={5} paddingTop={10} paddingLeft="15px" paddingRight="15px">
+export interface TargetsApiPayload {
+  targets: Record<string, number>
+}
+
+const Home = () => {
+  const targets = useQuery<TargetsApiPayload>(["targets"], () =>
+    axios
+      .get("http://localhost:8080/api/v1/targets")
+      .then((res) =>
+        res.data
+      )
+  , { refetchInterval: 1000 });
+
+  return (<SimpleGrid columns={2} spacing={5} paddingTop={10} paddingLeft="15px" paddingRight="15px">
     <Box padding="10px">
       <Heading paddingBottom="20px" fontSize="x-large">TARGET SELECTION</Heading>
-      <TargetSelection/>
+      <TargetSelection targets={targets}/>
     </Box>
     <Box padding="10px"><TargetChart></TargetChart></Box>
     <Divider gridColumn="span 2"/>
@@ -24,8 +38,9 @@ const Home = () =>
     </Box>
     <Box padding="10px">
       <Heading paddingBottom="20px" fontSize="x-large">WORKLOADS GENERATION</Heading>
-      <WorkloadsGeneration />
+      <WorkloadsGeneration/>
     </Box>
-  </SimpleGrid>
+  </SimpleGrid>)
+}
 
 export default Home;

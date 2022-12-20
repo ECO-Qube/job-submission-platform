@@ -1,15 +1,16 @@
 import * as React from "react";
 import TargetSelector from "./TargetSelector";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, UseQueryResult} from "@tanstack/react-query";
 import axios from "axios";
 import {Box, Spinner} from "@chakra-ui/react";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {FC, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {ColDef} from "ag-grid-community";
+import {TargetsApiPayload} from "../pages/Home";
 
 type TargetSelectorColumn = {
   nodeName: string;
-  cpuUsage: object;
+  cpuUsage: number;
   energyConsumption: number;
 }
 
@@ -17,14 +18,9 @@ const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
   return (cpuUsage + 1000) * 1.5;
 }
 
-const TargetSelection = () => {
-  const {data: payload, error, isLoading} = useQuery(["targets"], () =>
-    axios
-      .get("http://localhost:8080/api/v1/targets")
-      .then((res) =>
-        res.data
-      )
-  );
+type TargetSelectionProps = { targets: UseQueryResult<TargetsApiPayload> }
+const TargetSelection = ({targets}: TargetSelectionProps) => {
+  const {data: payload, error, isLoading} = targets;
 
   const gridRef = useRef<AgGridReact>(null);
 
