@@ -36,8 +36,8 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     if (!payload) return;
     const targetRowData: TargetSelectorColumn[] = Object.keys(payload?.targets).map((key) => ({
       nodeName: key,
-      cpuUsage: payload?.targets[key],
-      energyConsumption: payload?.targets[key] + 1000,
+      cpuUsage: payload?.targets[key]!, // https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-
+      energyConsumption: payload?.targets[key]! + 1000,
     }));
     setRowData(targetRowData);
   }, [payload]);
