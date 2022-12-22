@@ -2,12 +2,13 @@ import * as React from "react";
 import {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
-import {Box, Spinner} from "@chakra-ui/react";
+import {Box, Spinner, useColorMode} from "@chakra-ui/react";
 
 import { AgGridReact } from 'ag-grid-react';
 
-import 'ag-grid-community/dist/styles/ag-grid.min.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.min.css';
+import 'ag-grid-community/styles/ag-grid.min.css';
+import 'ag-grid-community/styles/ag-theme-alpine.min.css';
+
 import {ColDef} from "ag-grid-community";
 
 type WorkloadsListColumn = {
@@ -66,14 +67,18 @@ const WorkloadsList = () => {
       field: 'submissionDate',
       flex: 2,
       sortable: true,
+      resizable: false,
     },
   ]);
 
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       resizable: true,
+      suppressMovable: true,
     };
   }, []);
+
+  const {colorMode} = useColorMode();
 
   if (isLoading) {
     return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
@@ -85,9 +90,9 @@ const WorkloadsList = () => {
   }
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 500, width: "100%" }}>
+    <div className="ag-theme-alpine-dark" style={{ height: 500, width: "100%" }}>
       <AgGridReact rowData={rowData} columnDefs={columnDefs}
-                 defaultColDef={defaultColDef}
+                 defaultColDef={defaultColDef} className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
       ></AgGridReact>
     </div>
   );

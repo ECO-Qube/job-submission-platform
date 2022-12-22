@@ -9,7 +9,6 @@ body {
     --ag-grid-size: 10px;
     --ag-list-item-height: 40px;
     --ag-border-color: none;
-    --ag-icon-font-family: agGridMaterial;
 }
 
 .ag-ltr .ag-cell {
@@ -18,11 +17,9 @@ body {
 }
 
 .ag-root {
-    padding: var(--chakra-space-3);
     border-width: 1px;
     border-radius: 12px;
     overflow-x: auto;
-    z-index: 1;
     font-family: var(--chakra-fonts-body);
 }
 
@@ -30,48 +27,7 @@ body {
     color: var(--chakra-colors-gray-800);
 }
 
-.ag-theme-alpine .ag-header {
-    font-weight: var(--chakra-fontWeights-bold);
-    letter-spacing: var(--chakra-letterSpacings-wider);
-    font-size: var(--chakra-fontSizes-sm);
-    text-transform: uppercase;
-    font-family: var(--chakra-fonts-heading);
-    border-bottom: 1px solid var(--chakra-colors-gray-100);
-}
-
-.ag-row {
-    /*height: var(--ag-row-height);*/
-    /*background-color: var(--ag-background-color);*/
-    color: var(--chakra-colors-gray-800);
-    border-bottom: 1px solid var(--chakra-colors-gray-100);
-}
-
 .header-right .ag-header-cell-label {
     display: flex;
     justify-content: end;
 }
-
-/*.ag-root.ag-layout-normal {*/
-/*    height: auto;*/
-/*}*/
-
-/*.ag-cell {*/
-/*    text-align: start;*/
-/*    padding-top: var(--chakra-space-4);*/
-/*    padding-bottom: var(--chakra-space-4);*/
-/*    line-height: var(--chakra-lineHeights-5);*/
-/*    !*border-color: var(--chakra-colors-gray-100);*!*/
-/*}*/
-
-/*.ag-theme-alpine .ag-header-cell-label {*/
-/*    font-weight: var(--chakra-fontWeights-bold);*/
-/*    letter-spacing: var(--chakra-letterSpacings-wider);*/
-/*    line-height: var(--chakra-lineHeights-4);*/
-/*    font-size: var(--chakra-fontSizes-xs);*/
-/*    color: var(--chakra-colors-gray-600);*/
-/*    border-color: var(--chakra-colors-gray-100);*/
-/*    text-transform: uppercase;*/
-/*    font-family: var(--chakra-fonts-heading);*/
-/*    padding-top: var(--chakra-space-3);*/
-/*    padding-bottom: var(--chakra-space-3);*/
-/*}*/

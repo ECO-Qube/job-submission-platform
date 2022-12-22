@@ -1,12 +1,14 @@
 import * as React from "react";
 import TargetSelector from "./TargetSelector";
 import {UseQueryResult} from "@tanstack/react-query";
-import {Box, Spinner} from "@chakra-ui/react";
+import {Box, Spinner, useColorMode} from "@chakra-ui/react";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {ColDef} from "ag-grid-community";
 import {TargetsApiPayload} from "../pages/Home";
-import "ag-grid-community/styles/ag-grid.css";
+
+import 'ag-grid-community/styles/ag-grid.min.css';
+import 'ag-grid-community/styles/ag-theme-alpine.min.css';
 
 type TargetSelectorColumn = {
   nodeName: string;
@@ -46,7 +48,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     {
       headerName: 'NODE NAME',
       field: 'nodeName',
-      flex: 2,
+      flex: 3,
       sortable: true,
     },
     {
@@ -69,14 +71,18 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       cellStyle: {justifyContent: "flex-end"},
       sortable: true,
       headerClass: 'header-right',
+      resizable: false,
     },
   ];
 
   const defaultColDef = useMemo<ColDef>(() => {
     return {
+      resizable: true,
       suppressMovable: true,
     };
   }, []);
+
+  const {colorMode} = useColorMode();
 
   if (isLoading) {
     return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
@@ -89,9 +95,9 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
   }
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 500, width: "100%" }}>
+    <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"} style={{ height: 500, width: "100%" }}>
       <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
-                   defaultColDef={defaultColDef} className="ag-theme-alpine"
+                   defaultColDef={defaultColDef}
                    enableCellTextSelection={true} suppressCellFocus={true}
       ></AgGridReact>
     </div>
