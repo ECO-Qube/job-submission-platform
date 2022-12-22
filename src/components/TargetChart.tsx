@@ -1,4 +1,4 @@
-import React, {SetStateAction, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {AxisOptions, AxisTimeOptions, Chart} from "react-charts";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
@@ -38,6 +38,7 @@ const TargetChart = () => {
   const [graphData, setGraphData] = useState<UserSerie<InstantCpuUsage>[]>(
     []
   );
+  const [lineColors, setLineColors] = useState<string[]>([]);
 
   const {data: cpuUsagePayload, error, isLoading} = useQuery(["cpuUsage"], () =>
     axios
@@ -47,8 +48,6 @@ const TargetChart = () => {
       .then((res) => res.data)
   , {refetchInterval: 1000});
 
-  // TODO: Refactor this, i.e. don't repeat same code below (other is in TargetSelection), maybe get targets periodically
-  //  from a top-level components and update both TargetSelection and TargetChart (via props or context)
   const {data: targetsPayload} = useQuery(["targets"], () =>
     axios
       .get("http://localhost:8080/api/v1/targets")
@@ -63,7 +62,6 @@ const TargetChart = () => {
       tickCount: 10,
       formatters: {
         scale: (value: Date, formatters: AxisTimeOptions<NodeCpuUsageApiPayload>['formatters']) => {
-          // keep value? or "cannot infer type" will be thrown by the chart lib
           return formatXaxisLabels(value);
         }
       },
@@ -100,12 +98,21 @@ const TargetChart = () => {
       data: newData?.find((elem: UserSerie<NodeCpuUsageApiPayload>) => elem.label == key).data?.map((elem2: InstantCpuUsage) => ({
         timestamp: new Date(elem2.timestamp),
         data: value
-      }))
+      })),
     }))
     newData.push(...rulers);
 
-    // TODO: WHY!
-    // @ts-ignore
+
+    // Supports up to 5 nodes/targets atm
+    const colors = ["#8C613C", "#DC7EC0", "#797979", "#D5BB67", "#82C6E2",
+      "#4878D0", "#EE854A", "#6ACC64", "#D65F5F", "#956CB4"];
+
+    // Set colors for each serie
+    // Note this does not work with multiple nodes per target
+    setLineColors([...Array(newData.length).keys()].map((i) => {
+      return colors[i % newData.length]!;
+    }));
+
     setGraphData(newData);
   }, [cpuUsagePayload]);
 
@@ -125,7 +132,13 @@ const TargetChart = () => {
         data: graphData,
         primaryAxis,
         secondaryAxes,
-        // defaultColors: ["#ff0000", "#00ffff", "#ff00ff", "#ff0000", "#00ffff", "#ff00ff"], // TODO: How to color code?
+        getSeriesStyle: series => {
+          if (series.label.endsWith("-target")) {
+            return {strokeDasharray:"6,3"};
+          }
+          return {};
+        },
+        defaultColors: lineColors,
       }}
     />
   )
