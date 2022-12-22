@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {AxisOptions, AxisTimeOptions, Chart} from "react-charts";
+import {AxisOptions, Chart} from "react-charts";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {UserSerie} from "react-charts/types/types";
-import {Box, Spinner} from "@chakra-ui/react";
+import {Box, Spinner, useColorMode} from "@chakra-ui/react";
 
 type InstantCpuUsage = { timestamp: Date, data: number };
 
@@ -61,7 +61,7 @@ const TargetChart = () => {
       getValue: cpuUsage => cpuUsage.timestamp,
       tickCount: 10,
       formatters: {
-        scale: (value: Date, formatters: AxisTimeOptions<NodeCpuUsageApiPayload>['formatters']) => {
+        scale: (value: Date) => {
           return formatXaxisLabels(value);
         }
       },
@@ -85,7 +85,7 @@ const TargetChart = () => {
   useEffect(() => {
     if (!cpuUsagePayload) return;
 
-    const newData = cpuUsagePayload.map((currentNodeData: NodeCpuUsageApiPayload) => ({
+    const cpuUsages = cpuUsagePayload.map((currentNodeData: NodeCpuUsageApiPayload) => ({
       label: currentNodeData.nodeName,
       data: cpuUsagePayload.find((u: NodeCpuUsageApiPayload) => u.nodeName == currentNodeData.nodeName)?.usage.map((elem: InstantCpuUsage) => ({
         timestamp: new Date(elem.timestamp),
@@ -95,26 +95,28 @@ const TargetChart = () => {
 
     const rulers = Object.entries(targetsPayload.targets).map(([key, value]) => ({
       label: key + "-target",
-      data: newData?.find((elem: UserSerie<NodeCpuUsageApiPayload>) => elem.label == key).data?.map((elem2: InstantCpuUsage) => ({
+      data: cpuUsages?.find((elem: UserSerie<NodeCpuUsageApiPayload>) => elem.label == key).data?.map((elem2: InstantCpuUsage) => ({
         timestamp: new Date(elem2.timestamp),
         data: value
       })),
     }))
-    newData.push(...rulers);
-
+    cpuUsages.push(...rulers);
 
     // Supports up to 5 nodes/targets atm
+    // For more palettes Seaborn from Python is a good source
     const colors = ["#8C613C", "#DC7EC0", "#797979", "#D5BB67", "#82C6E2",
       "#4878D0", "#EE854A", "#6ACC64", "#D65F5F", "#956CB4"];
 
     // Set colors for each serie
     // Note this does not work with multiple nodes per target
-    setLineColors([...Array(newData.length).keys()].map((i) => {
-      return colors[i % newData.length]!;
+    setLineColors([...Array(cpuUsages.length).keys()].map((i) => {
+      return colors[i % cpuUsages.length]!;
     }));
 
-    setGraphData(newData);
+    setGraphData(cpuUsages);
   }, [cpuUsagePayload]);
+
+  const { colorMode } = useColorMode()
 
   if (isLoading) {
     return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
@@ -139,6 +141,7 @@ const TargetChart = () => {
           return {};
         },
         defaultColors: lineColors,
+        dark: colorMode === "dark",
       }}
     />
   )
