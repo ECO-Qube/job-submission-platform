@@ -47,6 +47,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       headerName: 'NODE NAME',
       field: 'nodeName',
       flex: 2,
+      sortable: true,
     },
     {
       headerName: 'CPU TARGET [%]',
@@ -65,14 +66,15 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       headerName: 'ENERGY TARGET [W]',
       field: 'energyConsumption',
       flex: 1,
-      type: 'rightAligned',
       cellStyle: {justifyContent: "flex-end"},
+      sortable: true,
+      headerClass: 'header-right',
     },
   ];
 
   const defaultColDef = useMemo<ColDef>(() => {
     return {
-      resizable: true,
+      suppressMovable: true,
     };
   }, []);
 
@@ -90,6 +92,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     <div className="ag-theme-alpine" style={{ height: 500, width: "100%" }}>
       <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
                    defaultColDef={defaultColDef} className="ag-theme-alpine"
+                   enableCellTextSelection={true} suppressCellFocus={true}
       ></AgGridReact>
     </div>
   );

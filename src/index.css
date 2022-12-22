@@ -9,6 +9,7 @@ body {
     --ag-grid-size: 10px;
     --ag-list-item-height: 40px;
     --ag-border-color: none;
+    --ag-icon-font-family: agGridMaterial;
 }
 
 .ag-ltr .ag-cell {
@@ -43,6 +44,11 @@ body {
     /*background-color: var(--ag-background-color);*/
     color: var(--chakra-colors-gray-800);
     border-bottom: 1px solid var(--chakra-colors-gray-100);
+}
+
+.header-right .ag-header-cell-label {
+    display: flex;
+    justify-content: end;
 }
 
 /*.ag-root.ag-layout-normal {*/

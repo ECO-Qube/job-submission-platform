@@ -47,21 +47,25 @@ const WorkloadsList = () => {
       headerName: 'WORKLOAD NAME',
       field: 'workloadName',
       flex: 2,
+      sortable: true,
     },
     {
       headerName: 'NODE NAME',
       field: 'nodeName',
       flex: 2,
+      sortable: true,
     },
     {
       headerName: 'STATUS',
       field: 'currentState',
       flex: 1,
+      sortable: true,
     },
     {
       headerName: 'SUBMISSION DATE',
       field: 'submissionDate',
       flex: 2,
+      sortable: true,
     },
   ]);
 
