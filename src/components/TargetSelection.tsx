@@ -48,13 +48,13 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     {
       headerName: 'NODE NAME',
       field: 'nodeName',
-      flex: 3,
+      flex: 2,
       sortable: true,
     },
     {
       headerName: 'CPU TARGET [%]',
       field: 'cpuUsage',
-      // flex: 1,
+      flex: 1,
       cellRenderer: (params: any) => {
         // put the value in bold
         return <TargetSelector nodeName={params.data.nodeName}
