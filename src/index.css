@@ -5,10 +5,10 @@ body {
 
 /* https://chakra-ui.com/docs/styled-system/theme */
 
-.ag-theme-alpine {
+.ag-theme-alpine, .ag-theme-alpine-dark {
     --ag-grid-size: 10px;
-    --ag-list-item-height: 40px;
-    --ag-border-color: none;
+    --ag-list-item-height: 10px;
+    --ag-header-height: 40px;
 }
 
 .ag-ltr .ag-cell {
@@ -16,18 +16,13 @@ body {
     display: flex;
 }
 
-.ag-root {
-    border-width: 1px;
-    border-radius: 12px;
-    overflow-x: auto;
-    font-family: var(--chakra-fonts-body);
-}
-
-.ag-cell-label-container {
-    color: var(--chakra-colors-gray-800);
-}
-
 .header-right .ag-header-cell-label {
     display: flex;
     justify-content: end;
+}
+
+.ag-root-wrapper {
+    border: var(--ag-borders) var(--ag-border-color);
+    border-width: 1px;
+    border-radius: 12px;
 }
