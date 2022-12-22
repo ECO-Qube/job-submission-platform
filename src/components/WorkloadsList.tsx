@@ -12,9 +12,9 @@ import 'ag-grid-community/styles/ag-theme-alpine.min.css';
 import {ColDef} from "ag-grid-community";
 
 type WorkloadsListColumn = {
-  workloadName: string;
+  name: string;
   nodeName: string;
-  currentState: string;
+  status: string;
   submissionDate: string;
 }
 
@@ -34,11 +34,11 @@ const WorkloadsList = () => {
 
   useEffect(() => {
     if (!payload) return;
-    const workloadRowData: WorkloadsListColumn[] = payload?.workloads.map((workload: any) => ({
+    const workloadRowData: WorkloadsListColumn[] = payload?.workloads.map((workload: WorkloadsListColumn) => ({
       workloadName: workload.name,
       nodeName: workload.nodeName,
       currentState: workload.status,
-      submissionDate: workload.submissionDate,
+      submissionDate: workload.submissionDate.replace(/(\+*)\.[^.]+$/, ''),
     }));
     setRowData(workloadRowData);
   }, [payload]);
@@ -92,7 +92,8 @@ const WorkloadsList = () => {
   return (
     <div className="ag-theme-alpine-dark" style={{ height: 500, width: "100%" }}>
       <AgGridReact rowData={rowData} columnDefs={columnDefs}
-                 defaultColDef={defaultColDef} className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
+                   defaultColDef={defaultColDef} className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
+                   enableCellTextSelection={true} suppressCellFocus={true}
       ></AgGridReact>
     </div>
   );

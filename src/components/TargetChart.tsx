@@ -147,7 +147,9 @@ const TargetChart = () => {
           },
           defaultColors: lineColors,
           dark: colorMode === "dark",
-          initialHeight: 800,
+          primaryCursor: {
+            show: false,
+          }
         }}
       />
     </div>
