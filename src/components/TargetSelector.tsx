@@ -48,8 +48,8 @@ const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps)
   return (
     // TODO: Extract styling
     <chakra.span display="flex" flexDirection="row" alignItems="center"  justifyContent="flex-start">
-      <NumberInput size='md' maxW={90} defaultValue={initialValue} min={0} max={100} step={5} isDisabled={!editEnabled}
-                   onChange={(value: string) => onNumberInputChange(value)}>
+      <NumberInput size='sm' maxW={90} defaultValue={initialValue} min={0} max={100} step={5} isDisabled={!editEnabled}
+                   onChange={(value: string) => onNumberInputChange(value)} height="30px">
         <NumberInputField/>
         <NumberInputStepper>
           <NumberIncrementStepper/>

@@ -25,19 +25,21 @@ const Home = () => {
       )
   , { refetchInterval: 1000 });
 
-  return (<SimpleGrid columns={2} spacing={5} paddingTop={10} paddingLeft="15px" paddingRight="15px">
+  return (<SimpleGrid spacingY="30px" columns={2} spacing={5} paddingTop={10} paddingBottom={10} paddingLeft="15px" paddingRight="15px">
     <Box padding="10px">
-      <Heading paddingBottom="20px" fontSize="x-large">TARGET SELECTION</Heading>
+      <Heading marginBottom="30px" fontSize="x-large">TARGET SELECTION</Heading>
       <TargetSelection targets={targets}/>
     </Box>
-    <Box padding="10px"><TargetChart></TargetChart></Box>
-    <Divider gridColumn="span 2"/>
+    <Box padding="10px" overflow="auto">
+      <Heading marginBottom="30px" fontSize="x-large">CPU USAGE / TARGETS</Heading>
+      <TargetChart />
+    </Box>
     <Box padding="10px">
-      <Heading paddingBottom="20px" fontSize="x-large">WORKLOADS LIST</Heading>
+      <Heading marginBottom="30px" fontSize="x-large">WORKLOADS LIST</Heading>
       <WorkloadsList/>
     </Box>
     <Box padding="10px">
-      <Heading paddingBottom="20px" fontSize="x-large">WORKLOADS GENERATION</Heading>
+      <Heading marginBottom="30px" fontSize="x-large">WORKLOADS GENERATION</Heading>
       <WorkloadsGeneration/>
     </Box>
   </SimpleGrid>)

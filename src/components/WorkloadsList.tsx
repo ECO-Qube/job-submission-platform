@@ -51,12 +51,12 @@ const WorkloadsList = () => {
     {
       headerName: 'NODE NAME',
       field: 'nodeName',
-      flex: 1,
+      flex: 2,
     },
     {
       headerName: 'STATUS',
       field: 'currentState',
-      maxWidth: 100,
+      flex: 1,
     },
     {
       headerName: 'SUBMISSION DATE',
@@ -81,7 +81,7 @@ const WorkloadsList = () => {
   }
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 400, width: "100%" }}>
+    <div className="ag-theme-alpine" style={{ height: 500, width: "100%" }}>
       <AgGridReact rowData={rowData} columnDefs={columnDefs}
                  defaultColDef={defaultColDef}
       ></AgGridReact>

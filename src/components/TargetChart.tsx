@@ -104,13 +104,13 @@ const TargetChart = () => {
 
     // Supports up to 5 nodes/targets atm
     // For more palettes Seaborn from Python is a good source
-    const colors = ["#8C613C", "#DC7EC0", "#797979", "#D5BB67", "#82C6E2",
-      "#4878D0", "#EE854A", "#6ACC64", "#D65F5F", "#956CB4"];
+    const colors = ["#D5BB67", "#82C6E2", "#DC7EC0", "#797979", "#EE854A",
+      "#4878D0", "#8C613C", "#6ACC64", "#D65F5F", "#956CB4"];
 
     // Set colors for each serie
     // Note this does not work with multiple nodes per target
     setLineColors([...Array(cpuUsages.length).keys()].map((i) => {
-      return colors[i % cpuUsages.length]!;
+      return colors[i % rulers.length]!;
     }));
 
     setGraphData(cpuUsages);
@@ -129,21 +129,28 @@ const TargetChart = () => {
   }
 
   return (
-    <Chart
-      options={{
-        data: graphData,
-        primaryAxis,
-        secondaryAxes,
-        getSeriesStyle: series => {
-          if (series.label.endsWith("-target")) {
-            return {strokeDasharray:"6,3"};
-          }
-          return {};
-        },
-        defaultColors: lineColors,
-        dark: colorMode === "dark",
-      }}
-    />
+    <div
+      style={{
+      height: "510px",
+    }}
+    >
+      <Chart
+        options={{
+          data: graphData,
+          primaryAxis,
+          secondaryAxes,
+          getSeriesStyle: series => {
+            if (series.label.endsWith("-target")) {
+              return {strokeDasharray:"6,3"};
+            }
+            return {};
+          },
+          defaultColors: lineColors,
+          dark: colorMode === "dark",
+          initialHeight: 800,
+        }}
+      />
+    </div>
   )
 }
 

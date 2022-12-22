@@ -1,12 +1,12 @@
 import * as React from "react";
 import TargetSelector from "./TargetSelector";
-import {useQuery, UseQueryResult} from "@tanstack/react-query";
-import axios from "axios";
+import {UseQueryResult} from "@tanstack/react-query";
 import {Box, Spinner} from "@chakra-ui/react";
-import {FC, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {ColDef} from "ag-grid-community";
 import {TargetsApiPayload} from "../pages/Home";
+import "ag-grid-community/styles/ag-grid.css";
 
 type TargetSelectorColumn = {
   nodeName: string;
@@ -57,12 +57,16 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
         return <TargetSelector nodeName={params.data.nodeName}
                                initialValue={params.data.cpuUsage}
                                onChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}/>;
-      }
+      },
+      type: 'rightAligned',
+      cellStyle: {justifyContent: "flex-end"},
     },
     {
       headerName: 'ENERGY TARGET [W]',
       field: 'energyConsumption',
       flex: 1,
+      type: 'rightAligned',
+      cellStyle: {justifyContent: "flex-end"},
     },
   ];
 
@@ -83,9 +87,9 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
   }
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 400, width: "100%" }}>
+    <div className="ag-theme-alpine" style={{ height: 500, width: "100%" }}>
       <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
-                   defaultColDef={defaultColDef}
+                   defaultColDef={defaultColDef} className="ag-theme-alpine"
       ></AgGridReact>
     </div>
   );
