@@ -11,18 +11,6 @@ body {
     --ag-header-height: 40px;
 }
 
-.ag-ltr .ag-cell {
-    border-right-width: 1px;
-    display: flex;
-}
-
-.header-right .ag-header-cell-label {
-    display: flex;
-    justify-content: end;
-}
-
-.ag-root-wrapper {
-    border: var(--ag-borders) var(--ag-border-color);
-    border-width: 1px;
+.border-radius > :first-child {
     border-radius: 12px;
 }

@@ -48,13 +48,12 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     {
       headerName: 'NODE NAME',
       field: 'nodeName',
-      flex: 2,
       sortable: true,
+      flex: 2,
     },
     {
       headerName: 'CPU TARGET [%]',
       field: 'cpuUsage',
-      flex: 1,
       cellRenderer: (params: any) => {
         // put the value in bold
         return <TargetSelector nodeName={params.data.nodeName}
@@ -62,16 +61,14 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
                                onChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}/>;
       },
       type: 'rightAligned',
-      cellStyle: {justifyContent: "flex-end"},
+      cellStyle: {display: 'flex', justifyContent: 'end'},
     },
     {
       headerName: 'ENERGY TARGET [W]',
       field: 'energyConsumption',
-      flex: 1,
-      cellStyle: {justifyContent: "flex-end"},
       sortable: true,
-      headerClass: 'header-right',
       resizable: false,
+      type: 'rightAligned',
     },
   ];
 
@@ -79,6 +76,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     return {
       resizable: true,
       suppressMovable: true,
+      flex: 1,
     };
   }, []);
 
@@ -98,7 +96,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"} style={{ height: 500, width: "100%" }}>
       <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
                    defaultColDef={defaultColDef}
-                   enableCellTextSelection={true} suppressCellFocus={true}
+                   enableCellTextSelection={true} suppressCellFocus={true} className="border-radius"
       ></AgGridReact>
     </div>
   );

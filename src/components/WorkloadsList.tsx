@@ -38,7 +38,7 @@ const WorkloadsList = () => {
       workloadName: workload.name,
       nodeName: workload.nodeName,
       currentState: workload.status,
-      submissionDate: workload.submissionDate.replace(/(\+*)\.[^.]+$/, ''),
+      submissionDate: workload.submissionDate.replace(/ \+0100.*/, ''),
     }));
     setRowData(workloadRowData);
   }, [payload]);
@@ -47,27 +47,28 @@ const WorkloadsList = () => {
     {
       headerName: 'WORKLOAD NAME',
       field: 'workloadName',
-      flex: 2,
       sortable: true,
+      flex: 3,
     },
     {
       headerName: 'NODE NAME',
       field: 'nodeName',
-      flex: 2,
       sortable: true,
+      flex: 2,
+
     },
     {
       headerName: 'STATUS',
       field: 'currentState',
-      flex: 1,
       sortable: true,
     },
     {
       headerName: 'SUBMISSION DATE',
       field: 'submissionDate',
-      flex: 2,
       sortable: true,
       resizable: false,
+      flex: 2,
+      type: 'rightAligned',
     },
   ]);
 
@@ -75,6 +76,7 @@ const WorkloadsList = () => {
     return {
       resizable: true,
       suppressMovable: true,
+      flex: 1,
     };
   }, []);
 
@@ -90,9 +92,9 @@ const WorkloadsList = () => {
   }
 
   return (
-    <div className="ag-theme-alpine-dark" style={{ height: 500, width: "100%" }}>
+    <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"} style={{ height: 500, width: "100%" }}>
       <AgGridReact rowData={rowData} columnDefs={columnDefs}
-                   defaultColDef={defaultColDef} className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
+                   defaultColDef={defaultColDef} className="border-radius"
                    enableCellTextSelection={true} suppressCellFocus={true}
       ></AgGridReact>
     </div>
