@@ -4,18 +4,15 @@ import {
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper, useCallbackRef, useToast,
+  NumberInputStepper, useToast,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {CheckIcon, EditIcon} from "@chakra-ui/icons";
-import {PropsWithChildren, useCallback, useState} from "react";
+import {PropsWithChildren, useState} from "react";
 import axios from "axios";
 import {useMutation} from "@tanstack/react-query";
 
-// TODO: Lift up for line chart
-// type TargetSelectorProps = PropsWithChildren<{ currentValue: number, onTrigger: CallableFunction }>;
 type TargetSelectorProps = PropsWithChildren<{ nodeName: string, initialValue: number, onChange: CallableFunction }>;
-// const TargetSelector = ({onTrigger}: TargetSelectorProps) => {
 const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps) => {
   const [editEnabled, enableEdit] = useState(false);
   const [currentValue, setCurrentValue] = useState(initialValue);
@@ -52,7 +49,6 @@ const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps)
   }
 
   return (
-    // TODO: Extract styling
     <chakra.span display="flex" flexDirection="row" alignItems="center"  justifyContent="flex-start">
       <NumberInput size='sm' maxW={90} defaultValue={initialValue} min={0} max={100} step={5} isDisabled={!editEnabled}
                    onChange={(value: string) => onNumberInputChange(value)} height="32px">

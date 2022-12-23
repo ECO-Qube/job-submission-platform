@@ -66,6 +66,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       sortable: true,
       resizable: false,
       type: 'rightAligned',
+      headerClass: 'right-aligned-header',
     },
   ];
 

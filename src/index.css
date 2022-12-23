@@ -14,3 +14,9 @@ body {
 .border-radius > :first-child {
     border-radius: 12px;
 }
+
+/* Fixes ugly sorting arrow in table header */
+.right-aligned-header .ag-header-cell-label {
+    display: flex;
+    justify-content: flex-end;
+}

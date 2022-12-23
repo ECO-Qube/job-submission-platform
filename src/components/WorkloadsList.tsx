@@ -69,6 +69,7 @@ const WorkloadsList = () => {
       resizable: false,
       type: 'rightAligned',
       flex: 3,
+      headerClass: 'right-aligned-header',
     },
   ]);
 
