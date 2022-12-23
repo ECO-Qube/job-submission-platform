@@ -4,7 +4,7 @@ import {
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper, useCallbackRef,
+  NumberInputStepper, useCallbackRef, useToast,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {CheckIcon, EditIcon} from "@chakra-ui/icons";
@@ -21,13 +21,19 @@ const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps)
   const [currentValue, setCurrentValue] = useState(initialValue);
   // Just to avoid sending a request if the value hasn't actually changed
   const [previousValue, setPreviousValue] = useState(initialValue);
+  const successToast = useToast();
 
   const mutateTarget = useMutation((newTarget: object) =>
     axios.post('http://localhost:8080/api/v1/targets', {
       targets: newTarget
     }), {
     onSuccess: () => {
-      // TODO: Toast for confirmation or error
+      successToast({
+        title: 'CPU target set successfully.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
     },
   });
 

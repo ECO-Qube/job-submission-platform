@@ -1,8 +1,7 @@
 import {
   Box,
   SimpleGrid,
-  Divider,
-  Heading, Spinner,
+  Heading,
 } from "@chakra-ui/react";
 import * as React from "react";
 import TargetSelection from "../components/TargetSelection";
@@ -11,7 +10,6 @@ import WorkloadsGeneration from "../components/WorkloadGeneration";
 import TargetChart from "../components/TargetChart";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
-import {useMemo, useRef} from "react";
 import {RequestHelper} from "../components/RequestHelper";
 
 export interface TargetsApiPayload {
