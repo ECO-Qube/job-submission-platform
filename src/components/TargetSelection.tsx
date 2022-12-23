@@ -1,7 +1,6 @@
 import * as React from "react";
 import TargetSelector from "./TargetSelector";
-import {UseQueryResult} from "@tanstack/react-query";
-import {Box, Spinner, useColorMode} from "@chakra-ui/react";
+import {useColorMode} from "@chakra-ui/react";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {ColDef} from "ag-grid-community";
@@ -20,10 +19,8 @@ const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
   return (cpuUsage + 1000) * 1.5;
 }
 
-type TargetSelectionProps = { targets: UseQueryResult<TargetsApiPayload> }
+type TargetSelectionProps = { targets: TargetsApiPayload | undefined }
 const TargetSelection = ({targets}: TargetSelectionProps) => {
-  const {data: payload, error, isLoading} = targets;
-
   const gridRef = useRef<AgGridReact>(null);
 
   const setNewEnergyConsumption = useCallback((value: string, rowId: string) => {
@@ -35,14 +32,14 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
   const [rowData, setRowData] = useState<TargetSelectorColumn[]>([]);
   // // TODO: Extract away
   useEffect(() => {
-    if (!payload) return;
-    const targetRowData: TargetSelectorColumn[] = Object.keys(payload?.targets).map((key) => ({
+    if (!targets) return;
+    const targetRowData: TargetSelectorColumn[] = Object.keys(targets?.targets).map((key) => ({
       nodeName: key,
-      cpuUsage: payload?.targets[key]!, // https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-
-      energyConsumption: payload?.targets[key]! + 1000,
+      cpuUsage: targets?.targets[key]!, // https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-
+      energyConsumption: targets?.targets[key]! + 1000,
     }));
     setRowData(targetRowData);
-  }, [payload]);
+  }, [targets]);
 
   const columnDefs: ColDef<TargetSelectorColumn>[] = [
     {
@@ -81,16 +78,6 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
   }, []);
 
   const {colorMode} = useColorMode();
-
-  if (isLoading) {
-    return <Box display="flex" justifyContent="center" alignContent="center"><Spinner size='xl'/></Box>;
-  }
-
-  if (error) {
-    // TODO: Maybe investigate why error is of type unknown
-    // @ts-ignore
-    return <Box>Error: {error.message} 😱</Box>;
-  }
 
   return (
     <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"} style={{ height: 500, width: "100%" }}>

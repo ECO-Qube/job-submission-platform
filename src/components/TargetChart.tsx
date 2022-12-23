@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {AxisOptions, Chart} from "react-charts";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, UseQueryResult} from "@tanstack/react-query";
 import axios from "axios";
 import {UserSerie} from "react-charts/types/types";
 import {Box, Spinner, useColorMode} from "@chakra-ui/react";
+import {TargetsApiPayload} from "../pages/Home";
 
 type InstantCpuUsage = { timestamp: Date, data: number };
 
@@ -34,7 +35,8 @@ function formatXaxisLabels(value: Date): string {
   return hours + ":" + minutes + ":" + seconds;
 }
 
-const TargetChart = () => {
+type TargetChartProps = { targets: TargetsApiPayload | undefined };
+const TargetChart = ({targets}: TargetChartProps) => {
   const [graphData, setGraphData] = useState<UserSerie<InstantCpuUsage>[]>(
     []
   );
@@ -47,14 +49,6 @@ const TargetChart = () => {
       })
       .then((res) => res.data)
   , {refetchInterval: 1000});
-
-  const {data: targetsPayload} = useQuery(["targets"], () =>
-    axios
-      .get("http://localhost:8080/api/v1/targets")
-      .then((res) =>
-        res.data
-      )
-  );
 
   const primaryAxis = React.useMemo(
     (): AxisOptions<InstantCpuUsage> => ({
@@ -93,7 +87,7 @@ const TargetChart = () => {
       }))
     }));
 
-    const rulers = Object.entries(targetsPayload.targets).map(([key, value]) => ({
+    const rulers = Object.entries(targets?.targets ?? {}).map(([key, value]) => ({
       label: key + "-target",
       data: cpuUsages?.find((elem: UserSerie<NodeCpuUsageApiPayload>) => elem.label == key).data?.map((elem2: InstantCpuUsage) => ({
         timestamp: new Date(elem2.timestamp),

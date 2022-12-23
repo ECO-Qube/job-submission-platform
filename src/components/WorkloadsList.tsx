@@ -38,7 +38,7 @@ const WorkloadsList = () => {
       workloadName: workload.name,
       nodeName: workload.nodeName,
       currentState: workload.status,
-      submissionDate: workload.submissionDate.replace(/ \+0100.*/, ''),
+      submissionDate: workload.submissionDate.replace(/ \+.*/, ''),
     }));
     setRowData(workloadRowData);
   }, [payload]);
@@ -48,27 +48,27 @@ const WorkloadsList = () => {
       headerName: 'WORKLOAD NAME',
       field: 'workloadName',
       sortable: true,
-      flex: 3,
+      flex: 5,
     },
     {
       headerName: 'NODE NAME',
       field: 'nodeName',
       sortable: true,
-      flex: 2,
-
+      flex: 4,
     },
     {
       headerName: 'STATUS',
       field: 'currentState',
       sortable: true,
+      flex: 2,
     },
     {
       headerName: 'SUBMISSION DATE',
       field: 'submissionDate',
       sortable: true,
       resizable: false,
-      flex: 2,
       type: 'rightAligned',
+      flex: 3,
     },
   ]);
 
