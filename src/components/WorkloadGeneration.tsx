@@ -1,4 +1,12 @@
-import {Button, Flex, useToast} from "@chakra-ui/react";
+import {
+  Button,
+  Flex, FormControl,
+  FormLabel, NumberDecrementStepper,
+  NumberIncrementStepper, NumberInput,
+  NumberInputField,
+  NumberInputStepper, Spacer, StackDivider,
+  useToast, VStack
+} from "@chakra-ui/react";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
 
@@ -60,21 +68,37 @@ const WorkloadsGeneration = () => {
       }
     });
 
-  return <Flex
-    direction="column"
-    justifyContent="center"
-    rowGap={4}
-  >
-    <Button size="sm" colorScheme='teal' variant='solid' onClick={() => spawnWorkload.mutate()}>
-      Spawn workload
-    </Button>
-    <Button size="sm" colorScheme='teal' variant='solid' onClick={() => deletePendingWorkload.mutate()}>
-      Delete pending workload
-    </Button>
-    <Button size="sm" colorScheme='teal' variant='solid' onClick={() => clearPendingWorkload.mutate()}>
-      Clear all completed workloads
-    </Button>
-  </Flex>;
+  return (<FormControl>
+      <FormLabel>Job duration [minutes]</FormLabel>
+      <VStack spacing={5} align='stretch'>
+        <NumberInput defaultValue={5} min={1} max={99}>
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+
+        <FormLabel>CPU target [%]</FormLabel>
+        <NumberInput defaultValue={5} min={1} max={99} step={5}>
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+
+        <Button size="sm" colorScheme='teal' variant='solid' onClick={() => spawnWorkload.mutate()}>
+          Spawn workload
+        </Button>
+        <Button size="sm" colorScheme='teal' variant='solid' onClick={() => deletePendingWorkload.mutate()}>
+          Delete pending workload
+        </Button>
+        <Button size="sm" colorScheme='teal' variant='solid' onClick={() => clearPendingWorkload.mutate()}>
+          Clear all completed workloads
+        </Button>
+      </VStack>
+    </FormControl>);
 }
 
 export default WorkloadsGeneration;
