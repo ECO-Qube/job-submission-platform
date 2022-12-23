@@ -88,13 +88,13 @@ const WorkloadsGeneration = () => {
           </NumberInputStepper>
         </NumberInput>
 
-        <Button size="sm" colorScheme='teal' variant='solid' onClick={() => spawnWorkload.mutate()}>
+        <Button size="sm" colorScheme='green' variant='solid' onClick={() => spawnWorkload.mutate()}>
           Spawn workload
         </Button>
-        <Button size="sm" colorScheme='teal' variant='solid' onClick={() => deletePendingWorkload.mutate()}>
+        <Button size="sm" colorScheme='red' variant='solid' onClick={() => deletePendingWorkload.mutate()}>
           Delete pending workload
         </Button>
-        <Button size="sm" colorScheme='teal' variant='solid' onClick={() => clearPendingWorkload.mutate()}>
+        <Button size="sm" colorScheme='gray' variant='solid' onClick={() => clearPendingWorkload.mutate()}>
           Clear all completed workloads
         </Button>
       </VStack>
