@@ -22,24 +22,35 @@ const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
 type TargetSelectionProps = { targets: TargetsApiPayload | undefined }
 const TargetSelection = ({targets}: TargetSelectionProps) => {
   const gridRef = useRef<AgGridReact>(null);
+  const [rowData, setRowData] = useState<TargetSelectorColumn[]>(generateRowData(targets!));
 
-  const setNewEnergyConsumption = useCallback((value: string, rowId: string) => {
-    let rowNode = gridRef.current!.api.getRowNode(rowId)!;
-    let newEnergyConsumption = fromCpuUsageToEnergyConsumption(Number(value));
-    rowNode.setDataValue('energyConsumption', newEnergyConsumption);
+  const setNewEnergyConsumption = useCallback((cpuUsage: string, rowIndex: number) => {
+    const currentRowData = rowData[rowIndex];
+    if (!currentRowData) return; // todo: catch null
+    currentRowData.energyConsumption = fromCpuUsageToEnergyConsumption(Number(cpuUsage)); // todo: catch null
+    currentRowData.cpuUsage = Number(cpuUsage); // todo: catch null
+    const updatedRowData = [...rowData];
+    updatedRowData[rowIndex] = currentRowData;
+
+    setRowData(updatedRowData);
   }, []);
 
-  const [rowData, setRowData] = useState<TargetSelectorColumn[]>([]);
-  // // TODO: Extract away
-  useEffect(() => {
-    if (!targets) return;
+  function generateRowData(targets: TargetsApiPayload): TargetSelectorColumn[] {
     const targetRowData: TargetSelectorColumn[] = Object.keys(targets?.targets).map((key) => ({
       nodeName: key,
       cpuUsage: targets?.targets[key]!, // https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-
       energyConsumption: targets?.targets[key]! + 1000,
     }));
-    setRowData(targetRowData);
-  }, [targets]);
+    // setRowData(targetRowData);
+    return targetRowData;
+  }
+
+  // // TODO: Extract away
+  // useEffect(() => {
+  //   if (!targets) return;
+  //
+  //   generateRowData(targets);
+  // }, [targets]);
 
   const columnDefs: ColDef<TargetSelectorColumn>[] = [
     {
@@ -54,7 +65,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       cellRenderer: (params: any) => {
         // put the value in bold
         return <TargetSelector nodeName={params.data.nodeName}
-                               initialValue={params.data.cpuUsage}
+                               value={params.data.cpuUsage}
                                onChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}/>;
       },
       type: 'rightAligned',

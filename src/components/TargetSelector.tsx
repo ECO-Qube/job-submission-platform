@@ -12,12 +12,10 @@ import {PropsWithChildren, useState} from "react";
 import axios from "axios";
 import {useMutation} from "@tanstack/react-query";
 
-type TargetSelectorProps = PropsWithChildren<{ nodeName: string, initialValue: number, onChange: CallableFunction }>;
-const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps) => {
-  const [editEnabled, enableEdit] = useState(false);
-  const [currentValue, setCurrentValue] = useState(initialValue);
-  // Just to avoid sending a request if the value hasn't actually changed
-  const [previousValue, setPreviousValue] = useState(initialValue);
+type TargetSelectorProps = PropsWithChildren<{ nodeName: string, value: number, onChange: CallableFunction }>;
+const TargetSelector = ({nodeName, value, onChange}: TargetSelectorProps) => {
+  const [previousValue, setPreviousValue] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const successToast = useToast();
 
   const mutateTarget = useMutation((newTarget: object) =>
@@ -34,31 +32,33 @@ const TargetSelector = ({nodeName, initialValue, onChange}: TargetSelectorProps)
     },
   });
 
-  const onSave = () => {
-    enableEdit(!editEnabled);
-
-    if (editEnabled && previousValue !== currentValue) {
-      setPreviousValue(currentValue);
-      mutateTarget.mutate({[nodeName]: currentValue});
+  const onEdit = async () => {
+    // TODO: If I have a prev value -> save, else define it
+    if (previousValue) {
+      if (previousValue !== value) {
+        // avoid race condition with parent component
+        // (when this finishes before parent gets updated values to pass as props)
+        await mutateTarget.mutateAsync({[nodeName]: value}); // wait before calling
+      }
+      setPreviousValue(null);
+    } else {
+      setIsEditing(true);
+      console.log("TRUE");
+      setPreviousValue(value);
     }
-  }
-
-  function onNumberInputChange(value: string) {
-    setCurrentValue(Number(value));
-    onChange(currentValue);
   }
 
   return (
     <chakra.span display="flex" flexDirection="row" alignItems="center"  justifyContent="flex-start">
-      <NumberInput size='sm' maxW={90} defaultValue={initialValue} min={0} max={100} step={5} isDisabled={!editEnabled}
-                   onChange={(value: string) => onNumberInputChange(value)} height="32px">
+      <NumberInput size='sm' maxW={90} defaultValue={value} min={0} max={100} step={5} isDisabled={!isEditing}
+                   onChange={(value) => onChange(value)} height="32px">
         <NumberInputField/>
         <NumberInputStepper>
           <NumberIncrementStepper/>
           <NumberDecrementStepper/>
         </NumberInputStepper>
       </NumberInput>
-      <EditButton onClick={onSave} enabled={editEnabled}/>
+      <EditButton onClick={() => onEdit()} enabled={isEditing}/>
     </chakra.span>
   )
 }

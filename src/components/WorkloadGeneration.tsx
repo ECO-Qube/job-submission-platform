@@ -14,7 +14,7 @@ const WorkloadsGeneration = () => {
   const toast = useToast();
 
   const spawnWorkload = useMutation(() => {
-    return axios.post('http://localhost:8080/api/v1/workloads')
+    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": 5, "cpuUsage": 25})
   }, {
     onSuccess: () => {
       toast({
