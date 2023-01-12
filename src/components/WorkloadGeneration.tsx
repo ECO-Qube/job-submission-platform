@@ -9,12 +9,15 @@ import {
 } from "@chakra-ui/react";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
+import {useState} from "react";
 
 const WorkloadsGeneration = () => {
   const toast = useToast();
+  const [jobLength, setJobLength] = useState(5);
+  const [cpuTarget, setCpuTarget] = useState(5);
 
   const spawnWorkload = useMutation(() => {
-    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": 5, "cpuUsage": 25})
+    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": jobLength, "cpuTarget": cpuTarget})
   }, {
     onSuccess: () => {
       toast({
@@ -71,7 +74,7 @@ const WorkloadsGeneration = () => {
   return (<FormControl>
       <FormLabel>Job duration [minutes]</FormLabel>
       <VStack spacing={5} align='stretch'>
-        <NumberInput defaultValue={5} min={1} max={99}>
+        <NumberInput defaultValue={5} min={1} max={99} onChange={(value) => setJobLength(Number(value))}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
@@ -80,7 +83,7 @@ const WorkloadsGeneration = () => {
         </NumberInput>
 
         <FormLabel>CPU target [%]</FormLabel>
-        <NumberInput defaultValue={5} min={1} max={99} step={5}>
+        <NumberInput defaultValue={5} min={1} max={99} step={5} onChange={(value) => setCpuTarget(Number(value))}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
