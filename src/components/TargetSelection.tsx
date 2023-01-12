@@ -10,6 +10,7 @@ import 'ag-grid-community/styles/ag-grid.min.css';
 import 'ag-grid-community/styles/ag-theme-alpine.min.css';
 
 type TargetSelectorColumn = {
+  editing: boolean;
   nodeName: string;
   cpuUsage: number;
   energyConsumption: number;
@@ -33,24 +34,28 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     updatedRowData[rowIndex] = currentRowData;
 
     setRowData(updatedRowData);
-  }, []);
+  }, [setRowData, fromCpuUsageToEnergyConsumption, rowData]);
+
+  const setEditing = useCallback((editing: boolean, rowIndex: number) => {
+    const currentRowData = rowData[rowIndex];
+    if (!currentRowData) return; // todo: catch null
+    currentRowData.editing = editing;
+    const updatedRowData = [...rowData];
+    updatedRowData[rowIndex] = currentRowData;
+
+    setRowData(updatedRowData);
+  }, [setRowData, rowData]);
+
 
   function generateRowData(targets: TargetsApiPayload): TargetSelectorColumn[] {
     const targetRowData: TargetSelectorColumn[] = Object.keys(targets?.targets).map((key) => ({
       nodeName: key,
       cpuUsage: targets?.targets[key]!, // https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-
       energyConsumption: targets?.targets[key]! + 1000,
+      editing: false,
     }));
-    // setRowData(targetRowData);
     return targetRowData;
   }
-
-  // // TODO: Extract away
-  // useEffect(() => {
-  //   if (!targets) return;
-  //
-  //   generateRowData(targets);
-  // }, [targets]);
 
   const columnDefs: ColDef<TargetSelectorColumn>[] = [
     {
@@ -63,10 +68,12 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       headerName: 'CPU TARGET [%]',
       field: 'cpuUsage',
       cellRenderer: (params: any) => {
-        // put the value in bold
         return <TargetSelector nodeName={params.data.nodeName}
                                value={params.data.cpuUsage}
-                               onChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}/>;
+                               onValueChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}
+                               onEditChange={(value: boolean) => setEditing(value, params.rowIndex)}
+                               editing={params.data.editing}
+        />;
       },
       type: 'rightAligned',
       cellStyle: {display: 'flex', justifyContent: 'end'},
