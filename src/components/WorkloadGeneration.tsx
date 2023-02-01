@@ -74,7 +74,7 @@ const WorkloadsGeneration = () => {
   return (<FormControl>
       <FormLabel>Job duration [minutes]</FormLabel>
       <VStack spacing={5} align='stretch'>
-        <NumberInput defaultValue={5} min={1} max={99} onChange={(value) => setJobLength(Number(value))}>
+        <NumberInput defaultValue={5} min={1} max={100} onChange={(value) => setJobLength(Number(value))}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
@@ -83,13 +83,14 @@ const WorkloadsGeneration = () => {
         </NumberInput>
 
         <FormLabel>CPU target [%]</FormLabel>
-        <NumberInput defaultValue={5} min={1} max={99} step={5} onChange={(value) => setCpuTarget(Number(value))}>
+        <NumberInput defaultValue={5} min={1} max={100} step={5} onChange={(value) => setCpuTarget(Number(value))}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
+
 
         <Button size="sm" colorScheme='green' variant='solid' onClick={() => spawnWorkload.mutate()}>
           Spawn workload

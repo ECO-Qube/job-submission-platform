@@ -1,6 +1,6 @@
 import * as React from "react";
 import TargetSelector from "./TargetSelector";
-import {useColorMode} from "@chakra-ui/react";
+import {Box, Text, useColorMode} from "@chakra-ui/react";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {ColDef} from "ag-grid-community";
@@ -98,12 +98,17 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
 
   const {colorMode} = useColorMode();
 
+  function getTotalEnergyTarget() {
+    return rowData.reduce((acc, curr) => acc + curr.energyConsumption, 0);
+  }
+
   return (
     <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"} style={{ height: 500, width: "100%" }}>
       <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
                    defaultColDef={defaultColDef}
                    enableCellTextSelection={true} suppressCellFocus={true} className="border-radius"
       ></AgGridReact>
+      <Box paddingBlock="10px"><Text>Total energy target: {getTotalEnergyTarget()} W</Text></Box>
     </div>
   );
 }

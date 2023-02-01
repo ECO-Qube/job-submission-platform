@@ -38,8 +38,6 @@ const TargetSelector = ({nodeName, value, editing, onValueChange, onEditChange}:
   });
 
   const onEdit = async () => {
-    debugger
-    // TODO: If I have a prev value -> save, else define it
     if (editing) {
       if (previousValue !== value) {
         // avoid race condition with parent component
