@@ -4,7 +4,7 @@ import {
   FormLabel, NumberDecrementStepper,
   NumberIncrementStepper, NumberInput,
   NumberInputField,
-  NumberInputStepper, Spacer, StackDivider,
+  NumberInputStepper, Select, Spacer, StackDivider,
   useToast, VStack
 } from "@chakra-ui/react";
 import {useMutation} from "@tanstack/react-query";
@@ -15,9 +15,10 @@ const WorkloadsGeneration = () => {
   const toast = useToast();
   const [jobLength, setJobLength] = useState(5);
   const [cpuTarget, setCpuTarget] = useState(5);
+  const [workloadType, setWorkloadType] = useState("");
 
   const spawnWorkload = useMutation(() => {
-    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": jobLength, "cpuTarget": cpuTarget})
+    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": jobLength, "cpuTarget": cpuTarget, "workloadType": workloadType})
   }, {
     onSuccess: () => {
       toast({
@@ -91,6 +92,13 @@ const WorkloadsGeneration = () => {
           </NumberInputStepper>
         </NumberInput>
 
+        <FormLabel>Workload type</FormLabel>
+        <Select defaultValue={''} onChange={(value) => setWorkloadType(value.target.value)}>
+          <option value=''>General-purpose</option>
+          <option value='cpu'>CPU-intensive</option>
+          <option value='memory'>Memory-intensive</option>
+          <option value='storage'>Storage-intensive</option>
+        </Select>
 
         <Button size="sm" colorScheme='green' variant='solid' onClick={() => spawnWorkload.mutate()}>
           Spawn workload

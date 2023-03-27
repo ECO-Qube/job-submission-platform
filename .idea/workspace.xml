@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="07dfb8d3-42cd-44fb-823e-8c7704f2ca6d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TargetSelection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TargetSelection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TargetSelector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TargetSelector.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/WorkloadGeneration.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/WorkloadGeneration.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +22,9 @@
   <component name="GOROOT" url="file:///usr/lib/go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiPersistence">
+    <option name="context" value="kind-kind" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
