@@ -79,7 +79,8 @@ const TargetChart = ({targets}: TargetChartProps) => {
   useEffect(() => {
     if (!cpuUsagePayload) return;
 
-    const cpuUsages = cpuUsagePayload.map((currentNodeData: NodeCpuUsageApiPayload) => ({
+    // TODO: QUICKFIX FOR DEMONSTRATION, TO BE IMPLEMENTED PROPERLY! - Remove mgmt node from graph
+    const cpuUsages = cpuUsagePayload.filter((currentNodeData: NodeCpuUsageApiPayload) => currentNodeData.nodeName.includes("topo")).map((currentNodeData: NodeCpuUsageApiPayload) => ({
       label: currentNodeData.nodeName,
       data: cpuUsagePayload.find((u: NodeCpuUsageApiPayload) => u.nodeName == currentNodeData.nodeName)?.usage.map((elem: InstantCpuUsage) => ({
         timestamp: new Date(elem.timestamp),

@@ -15,10 +15,11 @@ const WorkloadsGeneration = () => {
   const toast = useToast();
   const [jobLength, setJobLength] = useState(5);
   const [cpuTarget, setCpuTarget] = useState(5);
+  const [cpuCount, setCpuCount] = useState(1);
   const [workloadType, setWorkloadType] = useState("");
 
   const spawnWorkload = useMutation(() => {
-    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": jobLength, "cpuTarget": cpuTarget, "workloadType": workloadType})
+    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": jobLength, "cpuTarget": cpuTarget, "cpuCount": cpuCount, "workloadType": workloadType})
   }, {
     onSuccess: () => {
       toast({
@@ -85,6 +86,15 @@ const WorkloadsGeneration = () => {
 
         <FormLabel>CPU target [%]</FormLabel>
         <NumberInput defaultValue={5} min={1} max={100} step={5} onChange={(value) => setCpuTarget(Number(value))}>
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+
+        <FormLabel>CPU count</FormLabel>
+        <NumberInput defaultValue={1} min={1} step={1} onChange={(value) => setCpuCount(Number(value))}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
