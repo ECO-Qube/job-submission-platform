@@ -6,8 +6,8 @@ body {
 /* https://chakra-ui.com/docs/styled-system/theme */
 
 .ag-theme-alpine, .ag-theme-alpine-dark {
-    --ag-grid-size: 10px;
-    --ag-list-item-height: 10px;
+    --ag-grid-size: 8px;
+    --ag-list-item-height: 30px;
     --ag-header-height: 40px;
 }
 
