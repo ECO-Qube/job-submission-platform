@@ -93,7 +93,7 @@ const WorkloadsGeneration = () => {
           </NumberInputStepper>
         </NumberInput>
 
-        <FormLabel>CPU count</FormLabel>
+        <FormLabel>Workers count</FormLabel>
         <NumberInput defaultValue={1} min={1} step={1} onChange={(value) => setCpuCount(Number(value))}>
           <NumberInputField />
           <NumberInputStepper>
