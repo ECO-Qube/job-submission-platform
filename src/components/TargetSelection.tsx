@@ -1,7 +1,7 @@
 import * as React from "react";
+import {useCallback, useMemo, useRef, useState} from "react";
 import TargetSelector from "./TargetSelector";
 import {Box, Text, useColorMode} from "@chakra-ui/react";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {ColDef} from "ag-grid-community";
 import {TargetsApiPayload} from "../pages/Home";
@@ -22,6 +22,7 @@ const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
 
 type TargetSelectionProps = { targets: TargetsApiPayload | undefined }
 const TargetSelection = ({targets}: TargetSelectionProps) => {
+  // TODO: What was the grid ref for?
   const gridRef = useRef<AgGridReact>(null);
   const [rowData, setRowData] = useState<TargetSelectorColumn[]>(generateRowData(targets!));
 
@@ -48,13 +49,12 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
 
 
   function generateRowData(targets: TargetsApiPayload): TargetSelectorColumn[] {
-    const targetRowData: TargetSelectorColumn[] = Object.keys(targets?.targets).map((key) => ({
+    return Object.keys(targets?.targets).map((key) => ({
       nodeName: key,
       cpuUsage: targets?.targets[key]!, // https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-
       energyConsumption: targets?.targets[key]! + 1000,
       editing: false,
     }));
-    return targetRowData;
   }
 
   const columnDefs: ColDef<TargetSelectorColumn>[] = [
@@ -77,6 +77,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       },
       type: 'rightAligned',
       cellStyle: {display: 'flex', justifyContent: 'end'},
+      flex: 2,
     },
     {
       headerName: 'ENERGY TARGET [W]',
@@ -85,6 +86,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       resizable: false,
       type: 'rightAligned',
       headerClass: 'right-aligned-header',
+      flex: 2,
     },
   ];
 

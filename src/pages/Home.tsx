@@ -16,8 +16,8 @@ export interface TargetsApiPayload {
   targets: Record<string, number>
 }
 
-export interface LimitsApiPayload {
-  targets: Record<string, number>
+export interface WorkloadApiPayload {
+  workloads: Array<any> // TODO: define type
 }
 
 const Home = () => {
@@ -28,6 +28,14 @@ const Home = () => {
         res.data
       )
   , { refetchInterval: 1000 });
+  const workloads = useQuery<WorkloadApiPayload>(["workloads"], () =>
+    axios
+        .get("http://localhost:8080/api/v1/workloads")
+        .then((res) =>
+            res.data
+        ),
+{ refetchInterval: 1000 }
+  );
 
   return (<SimpleGrid spacingY="30px" columns={2} spacing={5} paddingTop={10} paddingBottom={10} paddingLeft="15px" paddingRight="15px">
     <Box padding="10px">
@@ -43,9 +51,11 @@ const Home = () => {
         <TargetChart targets={targets.data} />
       </RequestHelper>
     </Box>
-    <Box padding="10px">
+    <Box padding="10px" gridColumn="1 / 3">
       <Heading marginBottom="30px" fontSize="x-large">WORKLOADS LIST</Heading>
-      <WorkloadsList/>
+      <RequestHelper isLoading={workloads.isLoading} error={workloads.error}>
+        <WorkloadsList workloads={workloads.data} />
+      </RequestHelper>
     </Box>
     <Box padding="10px">
       <Heading marginBottom="30px" fontSize="x-large">WORKLOADS GENERATION</Heading>
