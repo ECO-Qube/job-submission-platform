@@ -16,6 +16,10 @@ export interface TargetsApiPayload {
   targets: Record<string, number>
 }
 
+export interface LimitsApiPayload {
+  targets: Record<string, number>
+}
+
 const Home = () => {
   const targets = useQuery<TargetsApiPayload>(["targets"], () =>
     axios
