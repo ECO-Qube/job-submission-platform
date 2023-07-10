@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {Box, Spinner, useColorMode} from "@chakra-ui/react";
@@ -11,8 +11,11 @@ import 'ag-grid-community/styles/ag-theme-alpine.min.css';
 
 import {ColDef} from "ag-grid-community";
 import {WorkloadApiPayload} from "../pages/Home";
+import TargetSelector from "./TargetSelector";
+import LimitSelector from "./LimitSelector";
 
 type WorkloadsListColumn = {
+  editing: boolean;
   name: string;
   nodeName: string;
   status: string;
@@ -21,12 +24,41 @@ type WorkloadsListColumn = {
   energyConsumption: number;
 }
 
+const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
+  return (cpuUsage + 1000) * 1.5;
+}
+
 type WorkloadListProps = { workloads: WorkloadApiPayload | undefined }
 const WorkloadsList = ({workloads}: WorkloadListProps) => {
+  const gridRef = useRef<AgGridReact>(null);
   const [rowData, setRowData] = useState<WorkloadsListColumn[]>(generateRowData(workloads!));
+
+  const setNewEnergyConsumption = useCallback((limit: string, rowIndex: number) => {
+    const currentRowData = rowData[rowIndex];
+    if (!currentRowData) return; // todo: catch null
+    currentRowData.energyConsumption = fromCpuUsageToEnergyConsumption(Number(limit)); // todo: catch null
+    currentRowData.limit = Number(limit); // todo: catch null
+    const updatedRowData = [...rowData];
+    updatedRowData[rowIndex] = currentRowData;
+
+    setRowData(updatedRowData);
+  }, [setRowData, fromCpuUsageToEnergyConsumption, rowData]);
+
+  const setEditing = useCallback((editing: boolean, rowIndex: number) => {
+    console.log("setEditing triggered");
+    const currentRowData = rowData[rowIndex];
+    if (!currentRowData) return; // todo: catch null
+    console.log("assigning editing value to currentRowData: ", editing);
+    currentRowData.editing = editing;
+    const updatedRowData = [...rowData];
+    updatedRowData[rowIndex] = currentRowData;
+
+    setRowData(updatedRowData);
+  }, [setRowData, rowData]);
 
   function generateRowData(workloads: WorkloadApiPayload): WorkloadsListColumn[] {
     return workloads?.workloads.map((workload: WorkloadsListColumn) => ({
+      editing: false,
       name: workload.name,
       nodeName: workload.nodeName,
       status: workload.status,
@@ -36,7 +68,7 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
     }));
   }
 
-  const [columnDefs] = useState([
+  const columnDefs: ColDef<WorkloadsListColumn>[] = [
     {
       headerName: 'WORKLOAD NAME',
       field: 'name',
@@ -58,11 +90,19 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
       flex: 1,
     },
     {
-      headerName: 'LIMIT',
+      headerName: 'CPU LIMIT [%]',
       field: 'limit',
-      type: 'rightAligned',
-      headerClass: 'right-aligned-header',
       flex: 1,
+      cellStyle: {display: 'flex', justifyContent: 'end'},
+      type: 'rightAligned',
+      cellRenderer: (params: any) => {
+        return <LimitSelector  workloadName={params.data.name}
+                               value={params.data.limit}
+                               onValueChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}
+                               onEditChange={(value: boolean) => setEditing(value, params.rowIndex)}
+                               editing={params.data.editing}
+        />;
+      },
     },
     {
       headerName: 'EST. ENERGY CONS. [W]',
@@ -72,7 +112,7 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
       headerClass: 'right-aligned-header',
       flex: 1,
     },
-  ]);
+  ];
 
   const defaultColDef = useMemo<ColDef>(() => {
     return {
@@ -87,7 +127,7 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
 
   return (
     <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"} style={{ height: 500, width: "100%" }}>
-      <AgGridReact rowData={rowData} columnDefs={columnDefs}
+      <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
                    defaultColDef={defaultColDef} className="border-radius"
                    enableCellTextSelection={true} suppressCellFocus={true}
       ></AgGridReact>

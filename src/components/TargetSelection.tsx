@@ -67,6 +67,9 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     {
       headerName: 'CPU TARGET [%]',
       field: 'cpuUsage',
+      type: 'rightAligned',
+      cellStyle: {display: 'flex', justifyContent: 'end'},
+      flex: 1,
       cellRenderer: (params: any) => {
         return <TargetSelector nodeName={params.data.nodeName}
                                value={params.data.cpuUsage}
@@ -75,9 +78,6 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
                                editing={params.data.editing}
         />;
       },
-      type: 'rightAligned',
-      cellStyle: {display: 'flex', justifyContent: 'end'},
-      flex: 2,
     },
     {
       headerName: 'ENERGY TARGET [W]',
@@ -86,7 +86,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
       resizable: false,
       type: 'rightAligned',
       headerClass: 'right-aligned-header',
-      flex: 2,
+      flex: 1,
     },
   ];
 
@@ -94,7 +94,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
     return {
       resizable: true,
       suppressMovable: true,
-      flex: 1,
+      flex: 2,
     };
   }, []);
 
@@ -107,8 +107,8 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
   return (
     <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"} style={{ height: 500, width: "100%" }}>
       <AgGridReact ref={gridRef} rowData={rowData} columnDefs={columnDefs}
-                   defaultColDef={defaultColDef}
-                   enableCellTextSelection={true} suppressCellFocus={true} className="border-radius"
+                   defaultColDef={defaultColDef} className="border-radius"
+                   enableCellTextSelection={true} suppressCellFocus={true}
       ></AgGridReact>
       <Box paddingBlock="10px"><Text>Total energy target: {getTotalEnergyTarget()} W</Text></Box>
     </div>
