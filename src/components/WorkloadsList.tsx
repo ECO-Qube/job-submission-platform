@@ -20,7 +20,7 @@ type WorkloadsListColumn = {
   nodeName: string;
   status: string;
   submissionDate: string;
-  limit: number;
+  cpuTarget: number;
   energyConsumption: number;
 }
 
@@ -30,6 +30,7 @@ const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
 
 type WorkloadListProps = { workloads: WorkloadApiPayload | undefined }
 const WorkloadsList = ({workloads}: WorkloadListProps) => {
+  console.log(workloads);
   const gridRef = useRef<AgGridReact>(null);
   const [rowData, setRowData] = useState<WorkloadsListColumn[]>(generateRowData(workloads!));
 
@@ -37,7 +38,7 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
     const currentRowData = rowData[rowIndex];
     if (!currentRowData) return; // todo: catch null
     currentRowData.energyConsumption = fromCpuUsageToEnergyConsumption(Number(limit)); // todo: catch null
-    currentRowData.limit = Number(limit); // todo: catch null
+    currentRowData.cpuTarget = Number(limit); // todo: catch null
     const updatedRowData = [...rowData];
     updatedRowData[rowIndex] = currentRowData;
 
@@ -63,7 +64,7 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
       nodeName: workload.nodeName,
       status: workload.status,
       submissionDate: workload.submissionDate.replace(/ \+.*/, ''),
-      limit: 5,
+      cpuTarget: workload.cpuTarget, // TODO: Refactor name, either call it cpuLimit or cpuTarget or something else
       energyConsumption: 1000,
     }));
   }
@@ -97,7 +98,7 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
       type: 'rightAligned',
       cellRenderer: (params: any) => {
         return <LimitSelector  workloadName={params.data.name}
-                               value={params.data.limit}
+                               value={params.data.cpuTarget}
                                onValueChange={(value: string) => setNewEnergyConsumption(value, params.rowIndex)}
                                onEditChange={(value: boolean) => setEditing(value, params.rowIndex)}
                                editing={params.data.editing}

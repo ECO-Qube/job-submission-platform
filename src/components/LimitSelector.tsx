@@ -24,9 +24,7 @@ const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChang
   const successToast = useToast();
 
   const mutateTarget = useMutation((newLimit: object) =>
-    axios.post('http://localhost:8080/api/v1/workload', {
-      limits: newLimit
-    }), {
+    axios.patch('http://localhost:8080/api/v1/workload', newLimit), {
     onSuccess: () => {
       successToast({
         title: 'Workload limit set successfully.',
@@ -43,7 +41,7 @@ const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChang
       if (previousValue !== value) {
         // avoid race condition with parent component
         // (when this finishes before parent gets updated values to pass as props)
-        await mutateTarget.mutateAsync({[workloadName]: value}); // wait before calling
+        await mutateTarget.mutateAsync({"jobName": workloadName, "cpuTarget": value}); // wait before calling
       }
       setPreviousValue(null);
       onEditChange(false);
