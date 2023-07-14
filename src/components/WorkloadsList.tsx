@@ -34,6 +34,11 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
   const gridRef = useRef<AgGridReact>(null);
   const [rowData, setRowData] = useState<WorkloadsListColumn[]>(generateRowData(workloads!));
 
+  useEffect(() => {
+    if (!workloads) return;
+    setRowData(generateRowData(workloads!));
+  }, [workloads]);
+
   const setNewEnergyConsumption = useCallback((limit: string, rowIndex: number) => {
     const currentRowData = rowData[rowIndex];
     if (!currentRowData) return; // todo: catch null

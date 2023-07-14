@@ -34,8 +34,7 @@ const Home = () => {
         .then((res) =>
             res.data
         ),
-{ refetchInterval: 1000 }
-  );
+{ refetchInterval: 1000 });
 
   return (<SimpleGrid spacingY="30px" columns={2} spacing={5} paddingTop={10} paddingBottom={10} paddingLeft="15px" paddingRight="15px">
     <Box padding="10px">
