@@ -30,7 +30,6 @@ const fromCpuUsageToEnergyConsumption = (cpuUsage: number) => {
 
 type WorkloadListProps = { workloads: WorkloadApiPayload | undefined }
 const WorkloadsList = ({workloads}: WorkloadListProps) => {
-  console.log(workloads);
   const gridRef = useRef<AgGridReact>(null);
   const [rowData, setRowData] = useState<WorkloadsListColumn[]>(generateRowData(workloads!));
 
@@ -51,10 +50,8 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
   }, [setRowData, fromCpuUsageToEnergyConsumption, rowData]);
 
   const setEditing = useCallback((editing: boolean, rowIndex: number) => {
-    console.log("setEditing triggered");
     const currentRowData = rowData[rowIndex];
     if (!currentRowData) return; // todo: catch null
-    console.log("assigning editing value to currentRowData: ", editing);
     currentRowData.editing = editing;
     const updatedRowData = [...rowData];
     updatedRowData[rowIndex] = currentRowData;

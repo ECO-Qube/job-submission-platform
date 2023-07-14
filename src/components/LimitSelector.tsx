@@ -36,7 +36,6 @@ const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChang
   });
 
   const onEdit = async () => {
-    console.log("onEdit triggered");
     if (editing) {
       if (previousValue !== value) {
         // avoid race condition with parent component
@@ -46,7 +45,6 @@ const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChang
       setPreviousValue(null);
       onEditChange(false);
     } else {
-      console.log("editing enabled");
       onEditChange(true);
       setPreviousValue(value);
     }

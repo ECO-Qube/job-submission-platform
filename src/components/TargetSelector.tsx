@@ -48,7 +48,6 @@ const TargetSelector = ({nodeName, value, editing, onValueChange, onEditChange}:
       onEditChange(false);
     } else {
       onEditChange(true);
-      console.log("TRUE");
       setPreviousValue(value);
     }
   }
