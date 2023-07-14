@@ -1,10 +1,10 @@
 import {
   Button,
   Flex, FormControl,
-  FormLabel, NumberDecrementStepper,
+  FormLabel, HStack, NumberDecrementStepper,
   NumberIncrementStepper, NumberInput,
   NumberInputField,
-  NumberInputStepper, Select, Spacer, StackDivider,
+  NumberInputStepper, Select, Spacer, StackDivider, Switch,
   useToast, VStack
 } from "@chakra-ui/react";
 import {useMutation} from "@tanstack/react-query";
@@ -74,8 +74,14 @@ const WorkloadsGeneration = () => {
     });
 
   return (<FormControl>
-      <FormLabel>Job duration [minutes]</FormLabel>
       <VStack spacing={5} align='stretch'>
+        <FormControl display='flex' alignItems='center'>
+          <FormLabel htmlFor='self-driving-mode' mb='0'>
+            Enable self-driving mode
+          </FormLabel>
+          <Switch id='self-driving-mode' />
+        </FormControl>
+        <FormLabel>Job duration [minutes]</FormLabel>
         <NumberInput defaultValue={5} min={1} max={100} onChange={(value) => setJobLength(Number(value))}>
           <NumberInputField />
           <NumberInputStepper>

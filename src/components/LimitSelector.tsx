@@ -22,6 +22,7 @@ type LimitSelectorProps = PropsWithChildren<{
 const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChange}: LimitSelectorProps) => {
   const [previousValue, setPreviousValue] = useState<number | null>(null);
   const successToast = useToast();
+  const failureToast = useToast();
 
   const mutateTarget = useMutation((newLimit: object) =>
     axios.patch('http://localhost:8080/api/v1/workload', newLimit), {
@@ -33,6 +34,14 @@ const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChang
         isClosable: true,
       });
     },
+    onError: (error) => {
+      failureToast({
+        title: 'Workload limit set failed.',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+    },
   });
 
   const onEdit = async () => {
@@ -40,7 +49,7 @@ const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChang
       if (previousValue !== value) {
         // avoid race condition with parent component
         // (when this finishes before parent gets updated values to pass as props)
-        await mutateTarget.mutateAsync({"jobName": workloadName, "cpuTarget": value}); // wait before calling
+        await mutateTarget.mutateAsync({"podName": workloadName, "cpuTarget": value}); // wait before calling
       }
       setPreviousValue(null);
       onEditChange(false);
