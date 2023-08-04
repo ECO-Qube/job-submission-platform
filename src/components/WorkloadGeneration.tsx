@@ -9,7 +9,10 @@ import {
 } from "@chakra-ui/react";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
-import {useState} from "react";
+import useDidMountEffect from "hooks/useDidMountEffect";
+import {MutableRefObject, useEffect, useRef, useState} from "react";
+
+
 
 const WorkloadsGeneration = () => {
   const toast = useToast();
@@ -72,6 +75,45 @@ const WorkloadsGeneration = () => {
         }
       }
     });
+  const [selfDrivingEnabled, setSelfDrivingEnabled] = useState(false);
+  const switchSelfDrivingMode = useMutation(() => {
+    return axios.put('http://localhost:8080/api/v1/self-driving', {"enabled": selfDrivingEnabled})
+  });
+
+  const [initialRender, setInitialRender] = useState(true);
+
+  useEffect(() => {
+    setInitialRender(false);
+  }, []);
+
+  useEffect(() => {
+    console.log(initialRender);
+    if (!initialRender) {
+      switchSelfDrivingMode.mutateAsync()
+        .then((res) => {
+          if (res.data.message === "success") {
+            const title = selfDrivingEnabled ? 'Self-driving mode enabled.' : 'Self-driving mode disabled.';
+            toast({
+              title: title,
+              status: 'success',
+              duration: 2000,
+              isClosable: true,
+            });
+          }
+        })
+        .catch((err) => {
+          const title = selfDrivingEnabled ? 'enabling' : 'disabling';
+          setSelfDrivingEnabled(false);
+          toast({
+            title: `Error ${title} self-driving mode.`,
+            status: 'warning',
+            duration: 2000,
+            isClosable: true,
+          });
+          console.log(err);
+        });
+    }
+  }, [selfDrivingEnabled]);
 
   return (<FormControl>
       <VStack spacing={5} align='stretch'>
@@ -79,10 +121,10 @@ const WorkloadsGeneration = () => {
           <FormLabel htmlFor='self-driving-mode' mb='0'>
             Enable self-driving mode
           </FormLabel>
-          <Switch id='self-driving-mode' />
+          <Switch id='self-driving-mode' isChecked={selfDrivingEnabled} onChange={() => setSelfDrivingEnabled(!selfDrivingEnabled)} />
         </FormControl>
         <FormLabel>Job duration [minutes]</FormLabel>
-        <NumberInput defaultValue={5} min={1} max={100} onChange={(value) => setJobLength(Number(value))}>
+        <NumberInput defaultValue={5} min={1} max={100}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
