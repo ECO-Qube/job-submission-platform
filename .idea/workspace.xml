@@ -62,7 +62,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/home/criscola/IdeaProjects/helio/capi-gce-demo/docker-tilt/tilt-workload/job-submission-platform/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
@@ -114,7 +114,13 @@
       <workItem from="1689414016872" duration="5000" />
       <workItem from="1690960983298" duration="3273000" />
       <workItem from="1691048340753" duration="365000" />
-      <workItem from="1691135621555" duration="9857000" />
+      <workItem from="1691135621555" duration="10527000" />
+      <workItem from="1691404434445" duration="2457000" />
+      <workItem from="1691479957209" duration="14000" />
+      <workItem from="1691566271065" duration="1800000" />
+      <workItem from="1691584444034" duration="1800000" />
+      <workItem from="1691662485674" duration="135000" />
+      <workItem from="1691737953387" duration="9163000" />
     </task>
     <servers />
   </component>

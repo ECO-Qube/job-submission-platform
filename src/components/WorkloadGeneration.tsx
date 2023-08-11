@@ -7,12 +7,15 @@ import {
   NumberInputStepper, Select, Spacer, StackDivider, Switch,
   useToast, VStack
 } from "@chakra-ui/react";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {logDOM} from "@testing-library/react";
 import axios from "axios";
 import useDidMountEffect from "hooks/useDidMountEffect";
 import {MutableRefObject, useEffect, useRef, useState} from "react";
 
-
+type SelfDrivingGetResponse = {
+  enabled: boolean;
+}
 
 const WorkloadsGeneration = () => {
   const toast = useToast();
@@ -75,35 +78,63 @@ const WorkloadsGeneration = () => {
         }
       }
     });
-  const [selfDrivingEnabled, setSelfDrivingEnabled] = useState(false);
+  const [selfDrivingIsChecked, setSelfDrivingIsChecked] = useState(false);
+  const [selfDrivingSwitchDisabled, setSelfDrivingSwitchDisabled] = useState(true);
+  const [selfDrivingMutationData, setSelfDrivingMutationData] = useState<SelfDrivingGetResponse | null>(null);
+
   const switchSelfDrivingMode = useMutation(() => {
-    return axios.put('http://localhost:8080/api/v1/self-driving', {"enabled": selfDrivingEnabled})
+    console.log("mutating...", selfDrivingMutationData);
+    return axios.put('http://localhost:8080/api/v1/self-driving', selfDrivingMutationData)
   });
 
   const [initialRender, setInitialRender] = useState(true);
 
+  const selfDrivingGetQuery = useQuery<SelfDrivingGetResponse, Error>(['self-driving-enabled'], () => {
+    return axios.get('http://localhost:8080/api/v1/self-driving').then((res) => res.data);
+  }, {
+    enabled: false,
+    onSuccess: (data) => {
+      // Set the switch to the value of the response
+      console.log("setting switch to: ", data.enabled);
+      setSelfDrivingIsChecked(data?.enabled ?? false);
+      setSelfDrivingSwitchDisabled(false);
+    },
+    onError: (err) => {
+      setSelfDrivingIsChecked(false);
+      setSelfDrivingSwitchDisabled(false);
+    },
+  });
+
   useEffect(() => {
-    setInitialRender(false);
+    console.log("for some reason, isChecked is", selfDrivingIsChecked);
+  }, [selfDrivingIsChecked]);
+
+  useEffect(() => {
+    selfDrivingGetQuery.refetch().then(r => setInitialRender(false));
   }, []);
 
   useEffect(() => {
-    console.log(initialRender);
+    // Don't mutate on initial render
     if (!initialRender) {
       switchSelfDrivingMode.mutateAsync()
         .then((res) => {
           if (res.data.message === "success") {
-            const title = selfDrivingEnabled ? 'Self-driving mode enabled.' : 'Self-driving mode disabled.';
+            const title = selfDrivingIsChecked ? 'Self-driving mode enabled.' : 'Self-driving mode disabled.';
             toast({
               title: title,
               status: 'success',
               duration: 2000,
               isClosable: true,
             });
+            // Since the mutation was successful, the switch can be enabled again
+            setSelfDrivingSwitchDisabled(false);
+            // Since the mutation was successful, the switch is set to the value of the mutation
+            setSelfDrivingIsChecked(selfDrivingMutationData?.enabled ?? false);
           }
         })
         .catch((err) => {
-          const title = selfDrivingEnabled ? 'enabling' : 'disabling';
-          setSelfDrivingEnabled(false);
+          const title = selfDrivingIsChecked ? 'enabling' : 'disabling';
+          setSelfDrivingIsChecked(false);
           toast({
             title: `Error ${title} self-driving mode.`,
             status: 'warning',
@@ -111,9 +142,11 @@ const WorkloadsGeneration = () => {
             isClosable: true,
           });
           console.log(err);
+          // User can try again, but value stays as before
+          setSelfDrivingSwitchDisabled(false);
         });
     }
-  }, [selfDrivingEnabled]);
+  }, [selfDrivingMutationData]); // since user clicked the switch, selfDrivingMutationDAta will have changed, so the mutation needs to be fired
 
   return (<FormControl>
       <VStack spacing={5} align='stretch'>
@@ -121,7 +154,13 @@ const WorkloadsGeneration = () => {
           <FormLabel htmlFor='self-driving-mode' mb='0'>
             Enable self-driving mode
           </FormLabel>
-          <Switch id='self-driving-mode' isChecked={selfDrivingEnabled} onChange={() => setSelfDrivingEnabled(!selfDrivingEnabled)} />
+          <Switch id='self-driving-mode' isDisabled={selfDrivingSwitchDisabled} isChecked={selfDrivingIsChecked} onChange={() => {
+            console.log("current switch value", selfDrivingIsChecked);
+            setSelfDrivingSwitchDisabled(true); // disable the switch until the mutation is done
+            setSelfDrivingMutationData({enabled: !selfDrivingIsChecked}); // set the data to be sent to the mutation
+            setSelfDrivingIsChecked(!selfDrivingIsChecked); // set the state of the switch to the opposite of the current state
+          }}
+          />
         </FormControl>
         <FormLabel>Job duration [minutes]</FormLabel>
         <NumberInput defaultValue={5} min={1} max={100}>
