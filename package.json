@@ -23,6 +23,8 @@
     "react": "^18.1.0",
     "react-charts": "^3.0.0-beta.50",
     "react-dom": "^18.1.0",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.45.4",
     "react-icons": "^3.0.0",
     "react-scripts": "5.0.1",
     "source-map-explorer": "^2.5.3",
