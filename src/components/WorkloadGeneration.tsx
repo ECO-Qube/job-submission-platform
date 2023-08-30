@@ -102,8 +102,8 @@ const WorkloadsGeneration = () => {
   const [tawaMutationData, setTawaMutationData] = useState<TawaGetResponse | null>(null);
 
   const switchTawaMode = useMutation(() => {
-    console.log("mutating...", selfDrivingMutationData);
-    return axios.put('http://localhost:8080/api/v1/self-driving', selfDrivingMutationData)
+    console.log("mutating...", tawaMutationData);
+    return axios.put('http://localhost:8080/api/v1/tawa', tawaMutationData)
   });
 
   // Create switch for schedulable mode
