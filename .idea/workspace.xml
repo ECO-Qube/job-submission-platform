@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="07dfb8d3-42cd-44fb-823e-8c7704f2ca6d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/CSVReader.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/FileUpload.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/WorkloadGeneration.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/WorkloadGeneration.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +36,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
@@ -128,7 +133,9 @@
       <workItem from="1693227405798" duration="2864000" />
       <workItem from="1693253098583" duration="1770000" />
       <workItem from="1693379292646" duration="4077000" />
-      <workItem from="1693404967210" duration="369000" />
+      <workItem from="1693404967210" duration="1211000" />
+      <workItem from="1693470453429" duration="12000" />
+      <workItem from="1693914044314" duration="6608000" />
     </task>
     <servers />
   </component>

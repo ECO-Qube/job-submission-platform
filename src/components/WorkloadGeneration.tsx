@@ -1,18 +1,15 @@
 import {
-  Button,
-  Flex, FormControl,
-  FormLabel, HStack, NumberDecrementStepper,
+  Button, FormControl,
+  FormLabel, NumberDecrementStepper,
   NumberIncrementStepper, NumberInput,
   NumberInputField,
-  NumberInputStepper, Select, Spacer, StackDivider, Switch,
+  NumberInputStepper, Select, Switch,
   useToast, VStack
 } from "@chakra-ui/react";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {logDOM} from "@testing-library/react";
 import axios from "axios";
-import useDidMountEffect from "hooks/useDidMountEffect";
-import {MutableRefObject, useEffect, useRef, useState} from "react";
-import FileUploadForm from "./FileUpload";
+import {SyntheticEvent, useEffect, useState} from "react";
+import CSVReader from "./CSVReader";
 
 type Enabled = {
   enabled: boolean;
@@ -33,9 +30,16 @@ const WorkloadsGeneration = () => {
   const [cpuTarget, setCpuTarget] = useState(5);
   const [cpuCount, setCpuCount] = useState(1);
   const [workloadType, setWorkloadType] = useState("");
+  const [scenario, setScenario] = useState<Record<string, string>>();
 
   const spawnWorkload = useMutation(() => {
-    return axios.post('http://localhost:8080/api/v1/workloads', {"jobLength": jobLength, "cpuTarget": cpuTarget, "cpuCount": cpuCount, "workloadType": workloadType})
+    return axios.post('http://localhost:8080/api/v1/workloads', {
+      "jobLength": jobLength,
+      "cpuTarget": cpuTarget,
+      "cpuCount": cpuCount,
+      "workloadType": workloadType,
+      "scenario": scenario,
+    })
   }, {
     onSuccess: () => {
       toast({
@@ -277,6 +281,18 @@ const WorkloadsGeneration = () => {
     }
   }, [schedulableMutationData]);
 
+  const handleUploadAccepted = (data: Array<Array<string>>) => {
+    // console.log(data);
+    // Convert Array<Array<string>> to Record<string, string>
+    const scenarioPayload: Record<string, string> = {};
+    for (const row of data.slice(1)) {
+      if (row[0] == null || row[1] == null) continue;
+      scenarioPayload[`${row[0]}`] = row[1].trim();
+    }
+    console.log(scenarioPayload);
+    setScenario(scenarioPayload);
+  }
+
   return (<FormControl>
       <VStack spacing={5} align='stretch'>
         <FormControl display='flex' alignItems='center'>
@@ -315,6 +331,13 @@ const WorkloadsGeneration = () => {
           }}
           />
         </FormControl>
+        {
+          tawaIsChecked &&
+            <>
+              <FormLabel>Scenario CSV upload (optional)</FormLabel>
+              <CSVReader onUploadAccepted={handleUploadAccepted} onUploadRemoved={() => setScenario(undefined)} />
+            </>
+          }
         <FormLabel>Job duration [minutes]</FormLabel>
         <NumberInput defaultValue={5} min={1} max={100}>
           <NumberInputField />
