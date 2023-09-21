@@ -30,7 +30,7 @@ const WorkloadsGeneration = () => {
   const [cpuTarget, setCpuTarget] = useState(5);
   const [cpuCount, setCpuCount] = useState(1);
   const [workloadType, setWorkloadType] = useState("");
-  const [scenario, setScenario] = useState<Record<string, string>>();
+  const [scenario, setScenario] = useState<Record<string, number>>();
 
   const spawnWorkload = useMutation(() => {
     return axios.post('http://localhost:8080/api/v1/workloads', {
@@ -282,12 +282,10 @@ const WorkloadsGeneration = () => {
   }, [schedulableMutationData]);
 
   const handleUploadAccepted = (data: Array<Array<string>>) => {
-    // console.log(data);
-    // Convert Array<Array<string>> to Record<string, string>
-    const scenarioPayload: Record<string, string> = {};
+    const scenarioPayload: Record<string, number> = {};
     for (const row of data.slice(1)) {
       if (row[0] == null || row[1] == null) continue;
-      scenarioPayload[`${row[0]}`] = row[1].trim();
+      scenarioPayload[`${row[0]}`] = parseFloat(row[1].trim());
     }
     console.log(scenarioPayload);
     setScenario(scenarioPayload);
