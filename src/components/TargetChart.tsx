@@ -96,15 +96,23 @@ const TargetChart = ({targets}: TargetChartProps) => {
     }))
     cpuUsages.push(...rulers);
 
-    // Supports up to 5 nodes/targets atm
-    // For more palettes Seaborn from Python is a good source
-    const colors = ["#D5BB67", "#82C6E2", "#DC7EC0", "#797979", "#EE854A",
-      "#4878D0", "#8C613C", "#6ACC64", "#D65F5F", "#956CB4"];
+    const colors = [
+      "#D5BB67", "#82C6E2", "#DC7EC0", "#797979", "#EE854A",
+      "#4878D0", "#8C613C", "#6ACC64", "#D65F5F", "#956CB4",
+      "#D5BB67", "#82C6E2", "#DC7EC0", "#797979", "#EE854A",
+      "#4878D0", "#8C613C", "#6ACC64", "#D65F5F", "#956CB4",
+      "#D5BB67", "#82C6E2", "#DC7EC0", "#797979", "#EE854A",
+      "#4878D0", "#8C613C", "#6ACC64", "#D65F5F", "#956CB4",
+      "#D5BB67", "#82C6E2", "#DC7EC0", "#797979", "#EE854A",
+      "#4878D0", "#8C613C", "#6ACC64", "#D65F5F", "#956CB4",
+      "#D5BB67", "#82C6E2", "#DC7EC0", "#797979", "#EE854A",
+      "#4878D0", "#8C613C", "#6ACC64", "#D65F5F", "#956CB4",
+    ];
 
     // Set colors for each serie
     // Note this does not work with multiple nodes per target
     setLineColors([...Array(cpuUsages.length).keys()].map((i) => {
-      return colors[i % rulers.length]!;
+      return colors[i] ?? "#D5BB67";
     }));
 
     setGraphData(cpuUsages);

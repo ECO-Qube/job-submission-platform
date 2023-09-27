@@ -33,7 +33,8 @@ const WorkloadsGeneration = () => {
   const [cpuTarget, setCpuTarget] = useState(5);
   const [cpuCount, setCpuCount] = useState(1);
   const [workloadType, setWorkloadType] = useState("");
-  const [scenario, setScenario] = useState<Record<string, number>>();
+  const [scenario, setWorkingScenario] = useState<Record<string, number>>();
+  const [jobScenario, setJobScenario] = useState<Record<string, number>>();
 
   const spawnWorkload = useMutation(() => {
     return axios.post(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workloads', {
@@ -343,14 +344,28 @@ const WorkloadsGeneration = () => {
     }
   }, [automaticJobSpawnMutationData]);
 
-  const handleUploadAccepted = (data: Array<Array<string>>) => {
+  const handleWorkingScenarioUpload = (data: Array<Array<string>>) => {
     const scenarioPayload: Record<string, number> = {};
     for (const row of data.slice(1)) {
       if (row[0] == null || row[1] == null) continue;
       scenarioPayload[`${row[0]}`] = parseFloat(row[1].trim());
     }
     console.log(scenarioPayload);
-    setScenario(scenarioPayload);
+    setWorkingScenario(scenarioPayload);
+  }
+
+  const handleJobScenarioUpload = (data: Array<Array<string>>) => {
+    const scenarioPayload: Record<string, number> = {};
+    for (const row of data.slice(1)) {
+      if (row[0] == null || row[1] == null || row[2] == null || row[3] == null) continue;
+      scenarioPayload[`job_`] = parseFloat(row[1].trim());
+    }
+    console.log(scenarioPayload);
+    setJobScenario(scenarioPayload);
+  }
+
+  const handleJobScenarioSpawn = () => {
+    console.log(jobScenario);
   }
 
   return (<FormControl>
@@ -405,13 +420,16 @@ const WorkloadsGeneration = () => {
         {
           tawaIsChecked &&
             <>
-              <FormLabel>Scenario CSV upload (optional)</FormLabel>
-              <CSVReader onUploadAccepted={handleUploadAccepted} onUploadRemoved={() => setScenario(undefined)} />
+              <FormLabel>Working Scenario CSV upload (optional)</FormLabel>
+              <CSVReader onUploadAccepted={handleWorkingScenarioUpload} onUploadRemoved={() => setWorkingScenario(undefined)} />
             </>
         }
         {
           !automaticJobSpawnIsChecked &&
             <>
+              <FormLabel>Job Scenario CSV upload (optional) </FormLabel>
+              <CSVReader onUploadAccepted={handleJobScenarioUpload} onUploadRemoved={() => setJobScenario(undefined)} />
+              <Button size="sm" colorScheme='green' variant='solid' disabled={jobScenario == null} onClick={handleJobScenarioSpawn}>Execute job scenario</Button>
               <FormLabel>Job duration [minutes]</FormLabel>
               <NumberInput defaultValue={5} min={1} max={100}>
                   <NumberInputField />
@@ -420,7 +438,6 @@ const WorkloadsGeneration = () => {
                       <NumberDecrementStepper />
                   </NumberInputStepper>
               </NumberInput>
-
               <FormLabel>CPU target [%]</FormLabel>
               <NumberInput defaultValue={5} min={1} max={100} step={5} onChange={(value) => setCpuTarget(Number(value))}>
                   <NumberInputField />
