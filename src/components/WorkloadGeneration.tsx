@@ -24,6 +24,9 @@ type TawaGetResponse = {
 type SchedulableGetResponse = {
 } & Enabled;
 
+type AutomaticJobSpawnGetResponse = {
+} & Enabled;
+
 const WorkloadsGeneration = () => {
   const toast = useToast();
   const [jobLength, setJobLength] = useState(5);
@@ -170,10 +173,35 @@ const WorkloadsGeneration = () => {
     },
   });
 
+  const [automaticJobSpawnIsChecked, setAutomaticJobSpawnIsChecked] = useState(false);
+  const [automaticJobSpawnDisabled, setAutomaticJobSpawnDisabled] = useState(true);
+  const [automaticJobSpawnMutationData, setAutomaticJobSpawnMutationData] = useState<AutomaticJobSpawnGetResponse | null>(null);
+
+  const automaticJobSpawnGetQuery = useQuery<AutomaticJobSpawnGetResponse, Error>(['automatic-job-spawn-enabled'], () => {
+    return axios.get('http://localhost:8080/api/v1/automatic-job-spawn').then((res) => res.data);
+  }, {
+    enabled: false,
+    onSuccess: (data) => {
+      // Set the switch to the value of the response
+      console.log("setting switch to: ", data.enabled);
+      setAutomaticJobSpawnIsChecked(data?.enabled ?? false);
+      setAutomaticJobSpawnDisabled(false);
+    },
+    onError: (err) => {
+      setAutomaticJobSpawnIsChecked(false);
+      setAutomaticJobSpawnDisabled(false);
+    },
+  });
+
+  const automaticJobSpawnMode = useMutation(() => {
+    return axios.put('http://localhost:8080/api/v1/automatic-job-spawn', automaticJobSpawnMutationData)
+  });
+
   useEffect(() => {
     selfDrivingGetQuery.refetch().then(r => setInitialRender(false));
     tawaGetQuery.refetch().then(r => setInitialRender(false));
     schedulableGetQuery.refetch().then(r => setInitialRender(false));
+    automaticJobSpawnGetQuery.refetch().then(r => setInitialRender(false))
   }, []);
 
   useEffect(() => {
@@ -281,6 +309,40 @@ const WorkloadsGeneration = () => {
     }
   }, [schedulableMutationData]);
 
+  useEffect(() => {
+    if (!initialRender) {
+      automaticJobSpawnMode.mutateAsync()
+        .then((res) => {
+          if (res.data.message === "success") {
+            const title = automaticJobSpawnIsChecked ? 'Automatic job spawn mode enabled.' : 'Automatic job spawn mode disabled.';
+            toast({
+              title: title,
+              status: 'success',
+              duration: 2000,
+              isClosable: true,
+            });
+            // Since the mutation was successful, the switch can be enabled again
+            setAutomaticJobSpawnDisabled(false);
+            // Since the mutation was successful, the switch is set to the value of the mutation
+            setAutomaticJobSpawnIsChecked(automaticJobSpawnMutationData?.enabled ?? false);
+          }
+        })
+        .catch((err) => {
+          const title = schedulableIsChecked ? 'enabling' : 'disabling';
+          setSchedulableIsChecked(false);
+          toast({
+            title: `Error ${title} schedulable mode.`,
+            status: 'warning',
+            duration: 2000,
+            isClosable: true,
+          });
+          console.log(err);
+          // User can try again, but value stays as before
+          setSchedulableSwitchDisabled(false);
+        });
+    }
+  }, [automaticJobSpawnMutationData]);
+
   const handleUploadAccepted = (data: Array<Array<string>>) => {
     const scenarioPayload: Record<string, number> = {};
     for (const row of data.slice(1)) {
@@ -329,59 +391,74 @@ const WorkloadsGeneration = () => {
           }}
           />
         </FormControl>
+        <FormControl display='flex' alignItems='center'>
+          <FormLabel htmlFor='automatic-job-spawn' mb='0'>
+            Enable automatic job spawn mode
+          </FormLabel>
+          <Switch id='automatic-job-spawn' isDisabled={automaticJobSpawnDisabled} isChecked={automaticJobSpawnIsChecked} onChange={() => {
+            setAutomaticJobSpawnDisabled(true); // disable the switch until the mutation is done
+            setAutomaticJobSpawnMutationData({enabled: !automaticJobSpawnIsChecked}); // set the data to be sent to the mutation
+            setAutomaticJobSpawnIsChecked(!automaticJobSpawnIsChecked); // set the state of the switch to the opposite of the current state
+          }}
+          />
+        </FormControl>
         {
           tawaIsChecked &&
             <>
               <FormLabel>Scenario CSV upload (optional)</FormLabel>
               <CSVReader onUploadAccepted={handleUploadAccepted} onUploadRemoved={() => setScenario(undefined)} />
             </>
-          }
-        <FormLabel>Job duration [minutes]</FormLabel>
-        <NumberInput defaultValue={5} min={1} max={100}>
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
+        }
+        {
+          !automaticJobSpawnIsChecked &&
+            <>
+              <FormLabel>Job duration [minutes]</FormLabel>
+              <NumberInput defaultValue={5} min={1} max={100}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                  </NumberInputStepper>
+              </NumberInput>
 
-        <FormLabel>CPU target [%]</FormLabel>
-        <NumberInput defaultValue={5} min={1} max={100} step={5} onChange={(value) => setCpuTarget(Number(value))}>
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
+              <FormLabel>CPU target [%]</FormLabel>
+              <NumberInput defaultValue={5} min={1} max={100} step={5} onChange={(value) => setCpuTarget(Number(value))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                  </NumberInputStepper>
+              </NumberInput>
 
-        <FormLabel>Workers count</FormLabel>
-        <NumberInput defaultValue={1} min={1} step={1} onChange={(value) => setCpuCount(Number(value))}>
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
+              <FormLabel>Workers count</FormLabel>
+              <NumberInput defaultValue={1} min={1} step={1} onChange={(value) => setCpuCount(Number(value))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                  </NumberInputStepper>
+              </NumberInput>
 
-        <FormLabel>Workload type</FormLabel>
-        <Select defaultValue={''} onChange={(value) => setWorkloadType(value.target.value)}>
-          <option value=''>General-purpose</option>
-          <option value='cpu'>CPU-intensive</option>
-          <option value='memory'>Memory-intensive</option>
-          <option value='storage'>Storage-intensive</option>
-        </Select>
+              <FormLabel>Workload type</FormLabel>
+              <Select defaultValue={''} onChange={(value) => setWorkloadType(value.target.value)}>
+                  <option value=''>General-purpose</option>
+                  <option value='cpu'>CPU-intensive</option>
+                  <option value='memory'>Memory-intensive</option>
+                  <option value='storage'>Storage-intensive</option>
+              </Select>
 
-        <Button size="sm" colorScheme='green' variant='solid' onClick={() => spawnWorkload.mutate()}>
-          Spawn workload
-        </Button>
-        <Button size="sm" colorScheme='red' variant='solid' onClick={() => deletePendingWorkload.mutate()}>
-          Delete pending workload
-        </Button>
-        <Button size="sm" colorScheme='gray' variant='solid' onClick={() => clearPendingWorkload.mutate()}>
-          Clear all completed workloads
-        </Button>
+              <Button size="sm" colorScheme='green' variant='solid' onClick={() => spawnWorkload.mutate()}>
+                  Spawn workload
+              </Button>
+              <Button size="sm" colorScheme='red' variant='solid' onClick={() => deletePendingWorkload.mutate()}>
+                  Delete pending workload
+              </Button>
+              <Button size="sm" colorScheme='gray' variant='solid' onClick={() => clearPendingWorkload.mutate()}>
+                  Clear all completed workloads
+              </Button>
+            </>
+        }
       </VStack>
-      {/*<FileUploadForm />*/}
     </FormControl>);
 }
 
