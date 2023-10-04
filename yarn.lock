@@ -5188,6 +5188,13 @@ dot-case@^3.0.4:
     no-case "^3.0.4"
     tslib "^2.0.3"
 
+dote@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/dote/-/dote-1.1.0.tgz"
+  integrity sha512-FgSIBaxINx0eL06MVKfOLuONBoL41vCQ5GM+MBBnYv2w2fvvgZGuqJGjU5cO3SNItXDyHmtiFG8nq+UITekDVQ==
+  dependencies:
+    readline-sync "^1.4.10"
+
 dotenv-expand@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npmjs.org/dotenv-expand/-/dotenv-expand-5.1.0.tgz"
@@ -9191,6 +9198,11 @@ readdirp@~3.6.0:
   integrity sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==
   dependencies:
     picomatch "^2.2.1"
+
+readline-sync@^1.4.10:
+  version "1.4.10"
+  resolved "https://registry.npmjs.org/readline-sync/-/readline-sync-1.4.10.tgz"
+  integrity sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==
 
 recursive-readdir@^2.2.2:
   version "2.2.2"

@@ -36,7 +36,7 @@ const WorkloadsGeneration = () => {
   const [scenario, setScenario] = useState<Record<string, number>>();
 
   const spawnWorkload = useMutation(() => {
-    return axios.post('http://localhost:8080/api/v1/workloads', {
+    return axios.post(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workloads', {
       "jobLength": jobLength,
       "cpuTarget": cpuTarget,
       "cpuCount": cpuCount,
@@ -54,7 +54,7 @@ const WorkloadsGeneration = () => {
     }
   });
   const clearPendingWorkload = useMutation(() => {
-    return axios.delete('http://localhost:8080/api/v1/workloads/completed')
+    return axios.delete(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workloads/completed')
   }, {
       onSuccess: (res) => {
         if (res.data.message === "success") {
@@ -75,7 +75,7 @@ const WorkloadsGeneration = () => {
       }
     });
   const deletePendingWorkload = useMutation(() => {
-    return axios.delete('http://localhost:8080/api/v1/workloads/pending/last')
+    return axios.delete(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workloads/pending/last')
   }, {
       onSuccess: (res) => {
         if (res.data.message === "success") {
@@ -101,7 +101,7 @@ const WorkloadsGeneration = () => {
 
   const switchSelfDrivingMode = useMutation(() => {
     console.log("mutating...", selfDrivingMutationData);
-    return axios.put('http://localhost:8080/api/v1/self-driving', selfDrivingMutationData)
+    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/self-driving', selfDrivingMutationData)
   });
 
   const [tawaIsChecked, setTawaIsChecked] = useState(false);
@@ -110,7 +110,7 @@ const WorkloadsGeneration = () => {
 
   const switchTawaMode = useMutation(() => {
     console.log("mutating...", tawaMutationData);
-    return axios.put('http://localhost:8080/api/v1/tawa', tawaMutationData)
+    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/tawa', tawaMutationData)
   });
 
   // Create switch for schedulable mode
@@ -120,13 +120,13 @@ const WorkloadsGeneration = () => {
 
   const switchSchedulableMode = useMutation(() => {
     console.log("mutating...", schedulableMutationData);
-    return axios.put('http://localhost:8080/api/v1/schedulable', schedulableMutationData)
+    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/schedulable', schedulableMutationData)
   });
 
   const [initialRender, setInitialRender] = useState(true);
 
   const selfDrivingGetQuery = useQuery<SelfDrivingGetResponse, Error>(['self-driving-enabled'], () => {
-    return axios.get('http://localhost:8080/api/v1/self-driving').then((res) => res.data);
+    return axios.get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/self-driving').then((res) => res.data);
   }, {
     enabled: false,
     onSuccess: (data) => {
@@ -142,7 +142,7 @@ const WorkloadsGeneration = () => {
   });
 
   const tawaGetQuery = useQuery<TawaGetResponse, Error>(['tawa-enabled'], () => {
-    return axios.get('http://localhost:8080/api/v1/tawa').then((res) => res.data);
+    return axios.get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/tawa').then((res) => res.data);
   }, {
     enabled: false,
     onSuccess: (data) => {
@@ -158,7 +158,7 @@ const WorkloadsGeneration = () => {
   });
 
   const schedulableGetQuery = useQuery<SchedulableGetResponse, Error>(['schedulable-enabled'], () => {
-    return axios.get('http://localhost:8080/api/v1/schedulable').then((res) => res.data);
+    return axios.get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/schedulable').then((res) => res.data);
   }, {
     enabled: false,
     onSuccess: (data) => {
@@ -178,7 +178,7 @@ const WorkloadsGeneration = () => {
   const [automaticJobSpawnMutationData, setAutomaticJobSpawnMutationData] = useState<AutomaticJobSpawnGetResponse | null>(null);
 
   const automaticJobSpawnGetQuery = useQuery<AutomaticJobSpawnGetResponse, Error>(['automatic-job-spawn-enabled'], () => {
-    return axios.get('http://localhost:8080/api/v1/automatic-job-spawn').then((res) => res.data);
+    return axios.get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/automatic-job-spawn').then((res) => res.data);
   }, {
     enabled: false,
     onSuccess: (data) => {
@@ -194,7 +194,7 @@ const WorkloadsGeneration = () => {
   });
 
   const automaticJobSpawnMode = useMutation(() => {
-    return axios.put('http://localhost:8080/api/v1/automatic-job-spawn', automaticJobSpawnMutationData)
+    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/automatic-job-spawn', automaticJobSpawnMutationData)
   });
 
   useEffect(() => {

@@ -23,14 +23,14 @@ export interface WorkloadApiPayload {
 const Home = () => {
   const targets = useQuery<TargetsApiPayload>(["targets"], () =>
     axios
-      .get("http://localhost:8080/api/v1/targets")
+      .get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/targets')
       .then((res) =>
         res.data
       )
   , { refetchInterval: 1000 });
   const workloads = useQuery<WorkloadApiPayload>(["workloads"], () =>
     axios
-        .get("http://localhost:8080/api/v1/workloads")
+        .get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workloads')
         .then((res) =>
             res.data
         ),

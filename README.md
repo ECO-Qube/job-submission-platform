@@ -22,3 +22,9 @@ targets:
 ```
 6. Start the target-exporter service as a process, e.g. `go run main.go` or through the IDE
 7. Start the job submission platform with `yarn start`
+
+## EMPA deployment notes
+
+- Copy ecoqube-dev.kubeconfig over the charts file of target-exporter: `sudo cp /etc/kubernetes/admin.conf ecoqube-dev.kubeconfig`
+- `helm install target-exporter . --namespace target-exporter --create-namespace --values values-empa.yaml`
+- Note that some nodes could be tainted for easier testing

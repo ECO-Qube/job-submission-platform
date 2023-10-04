@@ -25,7 +25,7 @@ const LimitSelector = ({workloadName, value, editing, onValueChange, onEditChang
   const failureToast = useToast();
 
   const mutateTarget = useMutation((newLimit: object) =>
-    axios.patch('http://localhost:8080/api/v1/workload', newLimit), {
+    axios.patch(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workload', newLimit), {
     onSuccess: () => {
       successToast({
         title: 'Workload limit set successfully.',

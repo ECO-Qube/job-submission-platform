@@ -24,7 +24,7 @@ const TargetSelector = ({nodeName, value, editing, onValueChange, onEditChange}:
   const successToast = useToast();
 
   const mutateTarget = useMutation((newTarget: object) =>
-    axios.post('http://localhost:8080/api/v1/targets', {
+    axios.post(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/targets', {
       targets: newTarget
     }), {
     onSuccess: () => {

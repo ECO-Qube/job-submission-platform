@@ -44,7 +44,7 @@ const TargetChart = ({targets}: TargetChartProps) => {
 
   const {data: cpuUsagePayload, error, isLoading} = useQuery(["cpuUsage"], () =>
     axios
-      .get("http://localhost:8080/api/v1/actualCpuUsageByRangeSeconds", { params:
+      .get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/actualCpuUsageByRangeSeconds', { params:
           {start: subtractSeconds(new Date(), 10).toISOString(), end: new Date().toISOString()}
       })
       .then((res) => res.data)
