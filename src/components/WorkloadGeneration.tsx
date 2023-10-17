@@ -34,7 +34,7 @@ const WorkloadsGeneration = () => {
   const [cpuCount, setCpuCount] = useState(1);
   const [workloadType, setWorkloadType] = useState("");
   const [scenario, setWorkingScenario] = useState<Record<string, number>>();
-  const [jobScenario, setJobScenario] = useState<Record<string, number>>();
+  const [jobScenario, setJobScenario] = useState<Array<JobScenarioRequest> | null>(null);
 
   const spawnWorkload = useMutation(() => {
     return axios.post(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workloads', {
@@ -195,7 +195,29 @@ const WorkloadsGeneration = () => {
   });
 
   const automaticJobSpawnMode = useMutation(() => {
-    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/automatic-job-spawn', automaticJobSpawnMutationData)
+    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/automatic-job-spawn', automaticJobSpawnMutationData);
+  });
+
+  const spawnJobScenario = useMutation(() => {
+    return axios.post(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/job-scenario', jobScenario);
+  }, {
+    onSuccess: () => {
+      toast({
+        title: 'Job scenario spawned successfully.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      toast({
+        title: 'Error while spawning job scenario.',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
+    }
   });
 
   useEffect(() => {
@@ -355,17 +377,27 @@ const WorkloadsGeneration = () => {
   }
 
   const handleJobScenarioUpload = (data: Array<Array<string>>) => {
-    const scenarioPayload: Record<string, number> = {};
+    const scenarioPayload: Array<JobScenarioRequest> = [];
     for (const row of data.slice(1)) {
-      if (row[0] == null || row[1] == null || row[2] == null || row[3] == null) continue;
-      scenarioPayload[`job_`] = parseFloat(row[1].trim());
+      if (row[0] == null || row[1] == null || row[2] == null || row[3] == null || row[4] == null) continue;
+      const jobLength = parseInt(row[1].trim());
+      const jobTarget = parseInt(row[2].trim());
+      const workersCount = parseInt(row[3].trim());
+      const startDate = new Date(row[4].trim());
+      scenarioPayload.push({
+        jobName: row[0].trim(),
+        jobLength: jobLength,
+        jobTarget: jobTarget,
+        workersCount: workersCount,
+        startDate: startDate,
+      });
     }
     console.log(scenarioPayload);
     setJobScenario(scenarioPayload);
   }
 
   const handleJobScenarioSpawn = () => {
-    console.log(jobScenario);
+    spawnJobScenario.mutate();
   }
 
   return (<FormControl>
@@ -428,10 +460,10 @@ const WorkloadsGeneration = () => {
           !automaticJobSpawnIsChecked &&
             <>
               <FormLabel>Job Scenario CSV upload (optional) </FormLabel>
-              <CSVReader onUploadAccepted={handleJobScenarioUpload} onUploadRemoved={() => setJobScenario(undefined)} />
+              <CSVReader onUploadAccepted={handleJobScenarioUpload} onUploadRemoved={() => setJobScenario(null)} />
               <Button size="sm" colorScheme='green' variant='solid' disabled={jobScenario == null} onClick={handleJobScenarioSpawn}>Execute job scenario</Button>
               <FormLabel>Job duration [minutes]</FormLabel>
-              <NumberInput defaultValue={5} min={1} max={100}>
+              <NumberInput defaultValue={5} min={1} max={100} onChange={(value) => setJobLength(Number(value))}>
                   <NumberInputField />
                   <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -478,5 +510,13 @@ const WorkloadsGeneration = () => {
       </VStack>
     </FormControl>);
 }
+
+type JobScenarioRequest = {
+  jobName: string;
+  jobLength: number;
+  jobTarget: number;
+  workersCount: number;
+  startDate: Date;
+};
 
 export default WorkloadsGeneration;
