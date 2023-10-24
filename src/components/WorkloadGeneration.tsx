@@ -379,14 +379,28 @@ const WorkloadsGeneration = () => {
   const handleJobScenarioUpload = (data: Array<Array<string>>) => {
     const scenarioPayload: Array<JobScenarioRequest> = [];
     for (const row of data.slice(1)) {
-      if (row[0] == null || row[1] == null || row[2] == null || row[3] == null || row[4] == null) continue;
-      const jobLength = parseInt(row[1].trim());
-      const jobTarget = parseInt(row[2].trim());
-      const workersCount = parseInt(row[3].trim());
-      const startDate = new Date(row[4].trim());
+      for (const cell of row) {
+        if (cell == null) {
+          toast({
+            title: 'Invalid CSV file.',
+            status: 'error',
+            duration: 4000,
+            isClosable: true,
+          });
+          return;
+        }
+      }
+    }
+    for (const row of data.slice(1)) {
+      const jobLength = parseInt(row[1]!.trim());
+      const minJobLength = parseInt(row[2]!.trim());
+      const jobTarget = parseInt(row[3]!.trim());
+      const workersCount = parseInt(row[4]!.trim());
+      const startDate = new Date(row[5]!.trim());
       scenarioPayload.push({
-        jobName: row[0].trim(),
+        jobName: row[0]!.trim()+Math.random().toString(36).slice(2, 7),
         jobLength: jobLength,
+        minJobTarget: minJobLength,
         jobTarget: jobTarget,
         workersCount: workersCount,
         startDate: startDate,
@@ -514,6 +528,7 @@ const WorkloadsGeneration = () => {
 type JobScenarioRequest = {
   jobName: string;
   jobLength: number;
+  minJobTarget: number;
   jobTarget: number;
   workersCount: number;
   startDate: Date;
