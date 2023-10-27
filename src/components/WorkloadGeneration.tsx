@@ -27,6 +27,9 @@ type SchedulableGetResponse = {
 type AutomaticJobSpawnGetResponse = {
 } & Enabled;
 
+type ServerOnOffGetResponse = {
+} & Enabled;
+
 const WorkloadsGeneration = () => {
   const toast = useToast();
   const [jobLength, setJobLength] = useState(5);
@@ -132,7 +135,7 @@ const WorkloadsGeneration = () => {
     enabled: false,
     onSuccess: (data) => {
       // Set the switch to the value of the response
-      console.log("setting switch to: ", data.enabled);
+      console.log("setting self-driving switch to: ", data.enabled);
       setSelfDrivingIsChecked(data?.enabled ?? false);
       setSelfDrivingSwitchDisabled(false);
     },
@@ -148,7 +151,7 @@ const WorkloadsGeneration = () => {
     enabled: false,
     onSuccess: (data) => {
       // Set the switch to the value of the response
-      console.log("setting switch to: ", data.enabled);
+      console.log("setting tawa switch to: ", data.enabled);
       setTawaIsChecked(data?.enabled ?? false);
       setTawaSwitchDisabled(false);
     },
@@ -164,7 +167,7 @@ const WorkloadsGeneration = () => {
     enabled: false,
     onSuccess: (data) => {
       // Set the switch to the value of the response
-      console.log("setting switch to: ", data.enabled);
+      console.log("setting schedulable switch to: ", data.enabled);
       setSchedulableIsChecked(data?.enabled ?? false);
       setSchedulableSwitchDisabled(false);
     },
@@ -184,7 +187,7 @@ const WorkloadsGeneration = () => {
     enabled: false,
     onSuccess: (data) => {
       // Set the switch to the value of the response
-      console.log("setting switch to: ", data.enabled);
+      console.log("setting automatic job spawn switch to: ", data.enabled);
       setAutomaticJobSpawnIsChecked(data?.enabled ?? false);
       setAutomaticJobSpawnDisabled(false);
     },
@@ -220,11 +223,36 @@ const WorkloadsGeneration = () => {
     }
   });
 
+  const [serverOnOffIsChecked, setServerOnOffIsChecked] = useState(false);
+  const [serverOnOffDisabled, setServerOnOffDisabled] = useState(true);
+  const [serverOnOffMutationData, setServerOnOffMutationData] = useState<ServerOnOffGetResponse | null>(null);
+
+  const serverOnOffGetQuery = useQuery<ServerOnOffGetResponse, Error>(['server-on-off-enabled'], () => {
+    return axios.get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/server-on-off').then((res) => res.data);
+  }, {
+    enabled: false,
+    onSuccess: (data) => {
+      // Set the switch to the value of the response
+      console.log("setting server on/off switch to: ", data.enabled);
+      setServerOnOffIsChecked(data?.enabled ?? false);
+      setServerOnOffDisabled(false);
+    },
+    onError: (err) => {
+      setServerOnOffIsChecked(false);
+      setServerOnOffDisabled(false);
+    },
+  });
+
+  const serverOnOffMode = useMutation(() => {
+    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/server-on-off', serverOnOffMutationData);
+  });
+
   useEffect(() => {
     selfDrivingGetQuery.refetch().then(r => setInitialRender(false));
     tawaGetQuery.refetch().then(r => setInitialRender(false));
     schedulableGetQuery.refetch().then(r => setInitialRender(false));
-    automaticJobSpawnGetQuery.refetch().then(r => setInitialRender(false))
+    automaticJobSpawnGetQuery.refetch().then(r => setInitialRender(false));
+    serverOnOffGetQuery.refetch().then(r => setInitialRender(false));
   }, []);
 
   useEffect(() => {
@@ -366,6 +394,40 @@ const WorkloadsGeneration = () => {
     }
   }, [automaticJobSpawnMutationData]);
 
+  useEffect(() => {
+    if (!initialRender) {
+      serverOnOffMode.mutateAsync()
+        .then((res) => {
+          if (res.data.message === "success") {
+            const title = serverOnOffIsChecked ? 'Server turned on.' : 'Server turned off.';
+            toast({
+              title: title,
+              status: 'success',
+              duration: 2000,
+              isClosable: true,
+            });
+            // Since the mutation was successful, the switch can be enabled again
+            setServerOnOffDisabled(false);
+            // Since the mutation was successful, the switch is set to the value of the mutation
+            setServerOnOffIsChecked(serverOnOffMutationData?.enabled ?? false);
+          }
+        })
+        .catch((err) => {
+          const title = serverOnOffIsChecked ? 'turning on' : 'turning off';
+          setServerOnOffIsChecked(false);
+          toast({
+            title: `Error ${title} server.`,
+            status: 'warning',
+            duration: 2000,
+            isClosable: true,
+          });
+          console.log(err);
+          // User can try again, but value stays as before
+          setServerOnOffDisabled(false);
+        });
+    }
+  }, [serverOnOffMutationData]);
+
   const handleWorkingScenarioUpload = (data: Array<Array<string>>) => {
     const scenarioPayload: Record<string, number> = {};
     for (const row of data.slice(1)) {
@@ -460,6 +522,17 @@ const WorkloadsGeneration = () => {
             setAutomaticJobSpawnDisabled(true); // disable the switch until the mutation is done
             setAutomaticJobSpawnMutationData({enabled: !automaticJobSpawnIsChecked}); // set the data to be sent to the mutation
             setAutomaticJobSpawnIsChecked(!automaticJobSpawnIsChecked); // set the state of the switch to the opposite of the current state
+          }}
+          />
+        </FormControl>
+        <FormControl display='flex' alignItems='center'>
+          <FormLabel htmlFor='server-on-off' mb='0'>
+            Enable server on/off
+          </FormLabel>
+          <Switch id='server-on-off' isDisabled={serverOnOffDisabled} isChecked={serverOnOffIsChecked} onChange={() => {
+            setServerOnOffDisabled(true); // disable the switch until the mutation is done
+            setServerOnOffMutationData({enabled: !serverOnOffIsChecked}); // set the data to be sent to the mutation
+            setServerOnOffIsChecked(!serverOnOffIsChecked); // set the state of the switch to the opposite of the current state
           }}
           />
         </FormControl>
