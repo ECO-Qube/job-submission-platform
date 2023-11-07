@@ -33,7 +33,8 @@ type ServerOnOffGetResponse = {
 const WorkloadsGeneration = () => {
   const toast = useToast();
   const [jobLength, setJobLength] = useState(5);
-  const [cpuTarget, setCpuTarget] = useState(5);
+  const [cpuTarget, setCpuTarget] = useState(10);
+  const [minCpuLimit, setMinCpuLimit] = useState(5);
   const [cpuCount, setCpuCount] = useState(1);
   const [workloadType, setWorkloadType] = useState("");
   const [scenario, setWorkingScenario] = useState<Record<string, number>>();
@@ -43,6 +44,7 @@ const WorkloadsGeneration = () => {
     return axios.post(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/workloads', {
       "jobLength": jobLength,
       "cpuTarget": cpuTarget,
+      "minCpuLimit": minCpuLimit,
       "cpuCount": cpuCount,
       "workloadType": workloadType,
       "scenario": scenario,
@@ -565,7 +567,14 @@ const WorkloadsGeneration = () => {
                       <NumberDecrementStepper />
                   </NumberInputStepper>
               </NumberInput>
-
+                <FormLabel>Minimum guaranteed CPU limit [%]</FormLabel>
+                <NumberInput defaultValue={5} min={1} max={100} step={5} onChange={(value) => setMinCpuLimit(Number(value))}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                    </NumberInputStepper>
+                </NumberInput>
               <FormLabel>Workers count</FormLabel>
               <NumberInput defaultValue={1} min={1} step={1} onChange={(value) => setCpuCount(Number(value))}>
                   <NumberInputField />
@@ -574,7 +583,6 @@ const WorkloadsGeneration = () => {
                       <NumberDecrementStepper />
                   </NumberInputStepper>
               </NumberInput>
-
               <FormLabel>Workload type</FormLabel>
               <Select defaultValue={''} onChange={(value) => setWorkloadType(value.target.value)}>
                   <option value=''>General-purpose</option>
