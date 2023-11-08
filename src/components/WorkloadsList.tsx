@@ -107,14 +107,14 @@ const WorkloadsList = ({workloads}: WorkloadListProps) => {
         />;
       },
     },
-    {
-      headerName: 'EST. ENERGY CONS. [W]',
-      field: 'energyConsumption',
-      resizable: false,
-      type: 'rightAligned',
-      headerClass: 'right-aligned-header',
-      flex: 1,
-    },
+    // {
+    //   headerName: 'EST. ENERGY CONS. [W]',
+    //   field: 'energyConsumption',
+    //   resizable: false,
+    //   type: 'rightAligned',
+    //   headerClass: 'right-aligned-header',
+    //   flex: 1,
+    // },
   ];
 
   const defaultColDef = useMemo<ColDef>(() => {

@@ -258,6 +258,17 @@ const WorkloadsGeneration = () => {
 
   const reduceTargetsGetQuery = useQuery<ReduceTargetsGetResponse, Error>(['reduce-targets-enabled'], () => {
     return axios.get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/reduce-targets').then((res) => res.data);
+  }, {
+    onSuccess: (data) => {
+      // Set the switch to the value of the response
+      console.log("setting reduce targets switch to: ", data.enabled);
+      setReduceTargetsIsChecked(data?.enabled ?? false);
+      setReduceTargetsDisabled(false);
+    },
+    onError: (err) => {
+      setReduceTargetsIsChecked(false);
+      setReduceTargetsDisabled(false);
+    },
   });
 
   const reduceTargetsMode = useMutation(() => {
