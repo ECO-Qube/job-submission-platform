@@ -79,15 +79,15 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
         />;
       },
     },
-    {
-      headerName: 'ENERGY TARGET [W]',
-      field: 'energyConsumption',
-      sortable: true,
-      resizable: false,
-      type: 'rightAligned',
-      headerClass: 'right-aligned-header',
-      flex: 1,
-    },
+    // {
+    //   headerName: 'ENERGY TARGET [W]',
+    //   field: 'energyConsumption',
+    //   sortable: true,
+    //   resizable: false,
+    //   type: 'rightAligned',
+    //   headerClass: 'right-aligned-header',
+    //   flex: 1,
+    // },
   ];
 
   const defaultColDef = useMemo<ColDef>(() => {
@@ -110,7 +110,7 @@ const TargetSelection = ({targets}: TargetSelectionProps) => {
                    defaultColDef={defaultColDef} className="border-radius"
                    enableCellTextSelection={true} suppressCellFocus={true}
       ></AgGridReact>
-      <Box paddingBlock="10px"><Text>Total energy target: {getTotalEnergyTarget()} W</Text></Box>
+      {/*<Box paddingBlock="10px"><Text>Total energy target: {getTotalEnergyTarget()} W</Text></Box>*/}
     </div>
   );
 }

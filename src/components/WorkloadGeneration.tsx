@@ -30,6 +30,9 @@ type AutomaticJobSpawnGetResponse = {
 type ServerOnOffGetResponse = {
 } & Enabled;
 
+type ReduceTargetsGetResponse = {
+} & Enabled;
+
 const WorkloadsGeneration = () => {
   const toast = useToast();
   const [jobLength, setJobLength] = useState(5);
@@ -249,12 +252,25 @@ const WorkloadsGeneration = () => {
     return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/server-on-off', serverOnOffMutationData);
   });
 
+  const [reduceTargetsIsChecked, setReduceTargetsIsChecked] = useState(true);
+  const [reduceTargetsDisabled, setReduceTargetsDisabled] = useState(true);
+  const [reduceTargetsMutationData, setReduceTargetsMutationData] = useState<ReduceTargetsGetResponse | null>(null);
+
+  const reduceTargetsGetQuery = useQuery<ReduceTargetsGetResponse, Error>(['reduce-targets-enabled'], () => {
+    return axios.get(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/reduce-targets').then((res) => res.data);
+  });
+
+  const reduceTargetsMode = useMutation(() => {
+    return axios.put(process.env.REACT_APP_TARGET_EXPORTER_URL+'/api/v1/reduce-targets', reduceTargetsMutationData);
+  });
+
   useEffect(() => {
     selfDrivingGetQuery.refetch().then(r => setInitialRender(false));
     tawaGetQuery.refetch().then(r => setInitialRender(false));
     schedulableGetQuery.refetch().then(r => setInitialRender(false));
     automaticJobSpawnGetQuery.refetch().then(r => setInitialRender(false));
     serverOnOffGetQuery.refetch().then(r => setInitialRender(false));
+    reduceTargetsGetQuery.refetch().then(r => setInitialRender(false));
   }, []);
 
   useEffect(() => {
@@ -430,6 +446,40 @@ const WorkloadsGeneration = () => {
     }
   }, [serverOnOffMutationData]);
 
+  useEffect(() => {
+    if (!initialRender) {
+      reduceTargetsMode.mutateAsync()
+        .then((res) => {
+          if (res.data.message === "success") {
+            const title = reduceTargetsIsChecked ? 'Automatic reduction of targets enabled.' : 'Automatic reduction of targets disabled.';
+            toast({
+              title: title,
+              status: 'success',
+              duration: 2000,
+              isClosable: true,
+            });
+            // Since the mutation was successful, the switch can be enabled again
+            setReduceTargetsDisabled(false);
+            // Since the mutation was successful, the switch is set to the value of the mutation
+            setReduceTargetsIsChecked(reduceTargetsMutationData?.enabled ?? false);
+          }
+        })
+        .catch((err) => {
+          const title = reduceTargetsIsChecked ? 'enabling' : 'disabling';
+          setReduceTargetsIsChecked(false);
+          toast({
+            title: `Error ${title} automatic reduction of targets.`,
+            status: 'warning',
+            duration: 2000,
+            isClosable: true,
+          });
+          console.log(err);
+          // User can try again, but value stays as before
+          setReduceTargetsDisabled(false);
+        });
+    }
+  }, [reduceTargetsMutationData]);
+
   const handleWorkingScenarioUpload = (data: Array<Array<string>>) => {
     const scenarioPayload: Record<string, number> = {};
     for (const row of data.slice(1)) {
@@ -535,6 +585,17 @@ const WorkloadsGeneration = () => {
             setServerOnOffDisabled(true); // disable the switch until the mutation is done
             setServerOnOffMutationData({enabled: !serverOnOffIsChecked}); // set the data to be sent to the mutation
             setServerOnOffIsChecked(!serverOnOffIsChecked); // set the state of the switch to the opposite of the current state
+          }}
+          />
+        </FormControl>
+        <FormControl display='flex' alignItems='center'>
+          <FormLabel htmlFor='reduce-targets' mb='0'>
+            Enable automatic reduction of targets to lower setpoints
+          </FormLabel>
+          <Switch id='reduce-targets' isDisabled={reduceTargetsDisabled} isChecked={reduceTargetsIsChecked} onChange={() => {
+            setReduceTargetsDisabled(true); // disable the switch until the mutation is done
+            setReduceTargetsMutationData({enabled: !reduceTargetsIsChecked}); // set the data to be sent to the mutation
+            setReduceTargetsIsChecked(!reduceTargetsIsChecked); // set the state of the switch to the opposite of the current state
           }}
           />
         </FormControl>
