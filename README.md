@@ -22,3 +22,9 @@ targets:
 ```
 6. Start the target-exporter service as a process, e.g. `go run main.go` or through the IDE
 7. Start the job submission platform with `yarn start`
+
+## EMPA setup notes
+### Build image
+```bash
+docker build -t cristianohelio/job-submission-platform:empa --platform=linux/amd64 . && docker push cristianohelio/job-submission-platform:empa
+```
